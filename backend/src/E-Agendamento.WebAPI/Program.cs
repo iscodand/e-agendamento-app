@@ -1,5 +1,6 @@
 using E_Agendamento.Infrastructure.Shared;
 using E_Agendamento.Infrastructure.Data;
+using E_Agendamento.Infrastructure.Identity;
 using E_Agendamento.Application.Contracts.Services;
 using E_Agendamento.WebAPI.Services;
 using E_Agendamento.Application;
@@ -20,6 +21,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationLayer();
 builder.Services.AddSharedInfrastructure(builder.Configuration);
 builder.Services.AddDataInfrastructure(builder.Configuration);
+builder.Services.AddIdentityInfrastructure(builder.Configuration);
 
 #endregion
 
