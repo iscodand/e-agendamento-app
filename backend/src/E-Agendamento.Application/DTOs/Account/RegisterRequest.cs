@@ -12,7 +12,7 @@ namespace E_Agendamento.Application.DTOs.Account
         public string ConfirmPassword { get; set; }
 
         public List<string> Roles { get; set; }
-        public string Company { get; set; }
+        public string CompanyId { get; set; }
 
         public static ApplicationUser Map(RegisterRequest request)
         {
