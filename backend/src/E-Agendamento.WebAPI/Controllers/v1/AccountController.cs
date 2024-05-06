@@ -16,13 +16,13 @@ namespace E_Agendamento.WebAPI.Controllers.v1
         }
 
         [HttpPost("auth/")]
-        public async Task<IActionResult> AuthenticateAsync(AuthenticationRequest request)
+        public async Task<IActionResult> AuthenticateAsync([FromBody] AuthenticationRequest request)
         {
             return Ok(await _accountService.AuthenticateAsync(request));
         }
 
         [HttpPost("register/")]
-        public async Task<IActionResult> RegisterAsync(RegisterRequest request)
+        public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequest request)
         {
             string origin = Request.Headers.Origin;
             return Ok(await _accountService.RegisterAsync(request, origin));
@@ -32,6 +32,20 @@ namespace E_Agendamento.WebAPI.Controllers.v1
         public async Task<IActionResult> ConfirmEmailAsync([FromQuery] string userId, [FromQuery] string code)
         {
             return Ok(await _accountService.ConfirmEmailAsync(userId, code));
+        }
+
+        [HttpPost("forgot-password/")]
+        public async Task<IActionResult> ForgotPasswordAsync([FromBody] ForgotPasswordRequest request)
+        {
+            string origin = Request.Headers.Origin;
+            await _accountService.ForgotPasswordAsync(request, origin);
+            return Ok();
+        }
+
+        [HttpPost("reset-password/")]
+        public async Task<IActionResult> ResetPasswordAsync([FromBody] ResetPasswordRequest request)
+        {
+            return Ok(await _accountService.ResetPasswordAsync(request));
         }
     }
 }
