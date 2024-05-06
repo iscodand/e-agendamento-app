@@ -5,11 +5,13 @@ namespace E_Agendamento.WebAPI.Services
 {
     public class AuthenticatedUserService : IAuthenticatedUserService
     {
-        public string UserId { get; }
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public AuthenticatedUserService(IHttpContextAccessor httpContextAccessor)
         {
-            UserId = httpContextAccessor.HttpContext.User.FindFirstValue("uid");
+            _httpContextAccessor = httpContextAccessor;
         }
+
+        public string UserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue("uid");
     }
 }
