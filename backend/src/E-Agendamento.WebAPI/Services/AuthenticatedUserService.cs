@@ -13,5 +13,6 @@ namespace E_Agendamento.WebAPI.Services
         }
 
         public string UserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue("uid");
+        public string CompanyId => _httpContextAccessor.HttpContext?.User?.FindFirstValue("companyId");
     }
 }

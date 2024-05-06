@@ -12,6 +12,7 @@ namespace E_Agendamento.WebAPI.Controllers.v1
         [HttpPost]
         public async Task<IActionResult> Post(CreateItemCommand command)
         {
+            command.CompanyId = AuthenticatedUser.CompanyId;
             return Ok(await Mediator.Send(command));
         }
     }
