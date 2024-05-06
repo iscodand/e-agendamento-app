@@ -5,9 +5,10 @@ namespace E_Agendamento.Application.Contracts.Services
 {
     public interface IAccountService
     {
-        public Task<Response<string>> AuthenticateAsync(AuthenticationRequest request);
-        public Task<Response<string>> RegisterAsync(RegisterRequest request);
-        public Task<Response<string>> ForgotPassword();
-        public Task<Response<string>> ResetPassword();
+        public Task<Response<AuthenticationResponse>> AuthenticateAsync(AuthenticationRequest request);
+        public Task<Response<string>> RegisterAsync(RegisterRequest request, string origin);
+        public Task<Response<string>> ConfirmEmailAsync(string userId, string code);
+        public Task ForgotPasswordAsync(ForgotPasswordRequest request, string origin);
+        public Task<Response<string>> ResetPasswordAsync(ResetPasswordRequest request);
     }
 }

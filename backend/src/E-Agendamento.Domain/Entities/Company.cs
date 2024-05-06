@@ -9,7 +9,7 @@ namespace E_Agendamento.Domain.Entities
         public string Description { get; set; }
         public bool IsActive { get; set; }
 
-        public ICollection<ApplicationUser> Users { get; set; }
+        public ICollection<ApplicationUser> Users { get; set; } = [];
         public ICollection<Item> Items { get; set; }
         public ICollection<Category> Categories { get; set; }
         public ICollection<Schedule> Schedules { get; set; }

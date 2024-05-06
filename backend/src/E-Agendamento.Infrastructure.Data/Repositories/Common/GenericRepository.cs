@@ -34,7 +34,7 @@ namespace E_Agendamento.Infrastructure.Data.Repositories.Common
                         .ConfigureAwait(false);
         }
 
-        public async Task<T> GetByIdAsync(int id)
+        public async Task<T> GetByIdAsync(string id)
         {
             return await _context.Set<T>().FindAsync(id).ConfigureAwait(false);
         }
