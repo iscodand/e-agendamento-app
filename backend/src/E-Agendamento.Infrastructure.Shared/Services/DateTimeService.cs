@@ -1,6 +1,6 @@
 using E_Agendamento.Application.Contracts.Services;
 
-namespace E_Agendamento.Infrastructure.Shared
+namespace E_Agendamento.Infrastructure.Shared.Services
 {
     public class DateTimeService : IDateTimeService
     {
