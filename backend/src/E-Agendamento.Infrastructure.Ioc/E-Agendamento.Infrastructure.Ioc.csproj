@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>E_Agendamento.Infrastructure.Ioc</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\E-Agendamento.Application\E-Agendamento.Application.csproj" />
+    <ProjectReference Include="..\E-Agendamento.Domain\E-Agendamento.Domain.csproj" />
+    <ProjectReference Include="..\E-Agendamento.Infrastructure.Data\E-Agendamento.Infrastructure.Data.csproj" />
+    <ProjectReference Include="..\E-Agendamento.Infrastructure.Identity\E-Agendamento.Infrastructure.Identity.csproj" />
+    <ProjectReference Include="..\E-Agendamento.Infrastructure.Shared\E-Agendamento.Infrastructure.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
