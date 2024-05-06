@@ -14,5 +14,11 @@ namespace E_Agendamento.Domain.Entities
 
         public ICollection<Company> Companies { get; set; }
         // public ICollection<Schedule> Schedules { get; set; }
+
+        public ApplicationUser()
+        {
+            Id = Guid.NewGuid().ToString();
+            IsActive = true;
+        }
     }
 }
