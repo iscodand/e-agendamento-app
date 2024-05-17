@@ -26,6 +26,15 @@ builder.Services.AddScoped<IAuthenticatedUserService, AuthenticatedUserService>(
 
 #endregion
 
+# region Cors Policy
+
+builder.Services.AddCors(p => p.AddPolicy("corspolicy", build =>
+{
+    build.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+}));
+
+#endregion
+
 #region Required Services
 
 builder.Services.AddApplicationLayer();
@@ -49,6 +58,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
+app.UseCors("corspolicy");
 app.MapControllers();
 app.UseErrorHandlerMiddleware();
 
