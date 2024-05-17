@@ -17,4 +17,9 @@
     <PackageReference Include="MediatR" Version="12.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Categories\" />
+    <Folder Include="Features\Items\Commands\DeleteItemById\" />
+  </ItemGroup>
+
 </Project>
