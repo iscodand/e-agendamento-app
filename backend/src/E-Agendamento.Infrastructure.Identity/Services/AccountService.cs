@@ -51,10 +51,10 @@ namespace E_Agendamento.Infrastructure.Identity.Services
                 throw new ApiException("Credenciais Inválidas. Verifique e tente novamente. 2");
             }
 
-            if (user.EmailConfirmed == false)
-            {
-                throw new ApiException($"E-mail ainda não verificado. Ative sua conta e tente novamente. ({user.Email})");
-            }
+            // if (user.EmailConfirmed == false)
+            // {
+            //     throw new ApiException($"E-mail ainda não verificado. Ative sua conta e tente novamente. ({user.Email})");
+            // }
 
             if (user.IsActive == false)
             {

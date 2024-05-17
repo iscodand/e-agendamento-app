@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace E_Agendamento.WebAPI.Controllers.v1
 {
-    [Route("v1/account/")]
+    [Route("api/v1/account/")]
     public class AccountController : BaseController
     {
         private readonly IAccountService _accountService;

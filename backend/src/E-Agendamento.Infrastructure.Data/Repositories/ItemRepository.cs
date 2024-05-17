@@ -15,11 +15,12 @@ namespace E_Agendamento.Infrastructure.Data.Repositories
             _items = context.Items;
         }
 
-        public async Task<bool> IsUniqueAsync(string name, string companyId, CancellationToken cancellationToken)
+        public async Task<bool> IsUniqueAsync(string name, string companyId, CancellationToken cancellationToken, string itemIdToComparison = "")
         {
             return await _items.AsNoTracking()
                             .Where(x => x.Name.ToUpper().Trim() == name.ToUpper().Trim())
                             .Where(x => x.CompanyId == companyId)
+                            .Where(x => x.Id != itemIdToComparison)
                             .AnyAsync(cancellationToken)
                             .ConfigureAwait(false);
         }
