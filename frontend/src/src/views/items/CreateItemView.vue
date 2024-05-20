@@ -1,19 +1,56 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { defineProps, defineEmits, ref } from 'vue';
+import { useItemStore } from '@/stores/items'
+import type { InputCreateItem } from '@/services/items/types';
+import TextInputComponent from "@/components/ui/input/TextInputComponent.vue";
+import NumberInputComponent from "@/components/ui/input/NumberInputComponent.vue";
+import ActionButton from '@/components/ui/buttons/ActionButton.vue';
 
 defineProps<{ show: boolean }>();
 
+const itemStore = useItemStore();
+
 const emit = defineEmits(['close', 'submit']);
 
-const itemName = ref('');
+let request = ref({
+    name: '',
+    description: '',
+    categoryId: '0bb34802-422b-4b93-b783-b2ecfa98da00',
+    totalQuantity: 0,
+    quantityAvailable: 0,
+    companyId: 'd62e9c28-dcb7-4633-adc3-0bd82678a363'
+})
 
 function hideModalHandler() {
+    request = ref({
+        name: '',
+        description: '',
+        categoryId: '0bb34802-422b-4b93-b783-b2ecfa98da00',
+        totalQuantity: 0,
+        quantityAvailable: 0,
+        companyId: 'd62e9c28-dcb7-4633-adc3-0bd82678a363'
+    })
     emit('close');
 }
 
-function handleSubmit() {
-    emit('submit', { name: itemName.value });
-    hideModalHandler();
+async function handleSubmit() {
+    const input: InputCreateItem = {
+        name: request.value.name,
+        description: request.value.description,
+        categoryId: request.value.categoryId,
+        totalQuantity: request.value.totalQuantity,
+        quantityAvailable: request.value.quantityAvailable,
+        companyId: request.value.companyId
+    };
+
+    const response = await itemStore.dispatchCreateItem(input);
+
+    if (response.succeeded) {
+        emit('submit', { name: request.value.name });
+        hideModalHandler();
+    } else {
+        console.error('Failed to create item', response.status);
+    }
 }
 </script>
 
@@ -27,20 +64,30 @@ function handleSubmit() {
                     <form @submit.prevent="handleSubmit">
                         <div class="mb-4">
                             <label for="itemName" class="block text-sm font-medium text-gray-700">Nome do Item</label>
-                            <input type="text" id="itemName" v-model="itemName" class="mt-1 block w-full" required>
+                            <TextInputComponent v-model="request.name" placeholder="Nome do Item" />
                         </div>
+
                         <div class="mb-4">
-                            <label for="itemName" class="block text-sm font-medium text-gray-700">Descrição do
+                            <label for="itemDescription" class="block text-sm font-medium text-gray-700">Descrição do
                                 Item</label>
-                            <input type="text" id="itemName" v-model="itemName" class="mt-1 block w-full" required>
+                            <TextInputComponent v-model="request.description" placeholder="Descrição do Item" />
                         </div>
+
                         <div class="mb-4">
-                            <label for="itemName" class="block text-sm font-medium text-gray-700">Nome do Item</label>
-                            <input type="text" id="itemName" v-model="itemName" class="mt-1 block w-full" required>
+                            <label for="quantityAvailable" class="block text-sm font-medium text-gray-700">Quantidade
+                                Disponível</label>
+                            <NumberInputComponent v-model="request.totalQuantity" />
                         </div>
-                        <div class="flex justify-end">
-                            <button type="button" @click="hideModalHandler" class="mr-2">Cancelar</button>
-                            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Criar</button>
+
+                        <div class="mb-4">
+                            <label for="totalQuantity" class="block text-sm font-medium text-gray-700">Quantidade
+                                Total</label>
+                            <NumberInputComponent v-model="request.quantityAvailable" />
+                        </div>
+
+                        <div class="flex justify-end gap-3">
+                            <ActionButton color="red" @click="hideModalHandler">Cancelar</ActionButton>
+                            <ActionButton @click="handleSubmit" color="green">Cadastrar</ActionButton>
                         </div>
                     </form>
                 </div>

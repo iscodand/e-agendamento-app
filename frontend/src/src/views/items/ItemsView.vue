@@ -1,8 +1,7 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
-import { useItemStore } from '../../stores/items'
-
-import MainComponent from '../../components/layout/MainComponent.vue'
+import { useItemStore } from '@/stores/items'
+import MainComponent from '@/components/ui/layout/MainComponent.vue'
 import CreateItemView from './CreateItemView.vue';
 
 const showModal = ref(false);
@@ -23,7 +22,7 @@ const itemsStore = useItemStore()
 const items = ref([])
 
 onMounted(async () => {
-  const { succeeded, data, status } = await itemsStore.dispatchGetItems()
+  const { succeeded, data, status } = await itemsStore.dispatchGetItems();
 
   if (succeeded) {
     items.value = data
