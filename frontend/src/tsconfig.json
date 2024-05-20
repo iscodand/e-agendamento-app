@@ -1,4 +1,7 @@
 {
+  "vueCompilerOptions": {
+    "allowJs": true
+  },
   "files": [],
   "references": [
     {
