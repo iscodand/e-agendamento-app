@@ -11,5 +11,6 @@ export type InputCreateItem = {
     description: string,
     categoryId: string,
     totalQuantity: number,
-    quantityAvailable: number
+    quantityAvailable: number,
+    companyId: string
 };
