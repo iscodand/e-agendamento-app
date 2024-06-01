@@ -8,6 +8,7 @@ namespace E_Agendamento.Application.Features.Items.Commands
 {
     public partial class CreateItemCommand : IRequest<Response<CreateItemCommand>>
     {
+        public string Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string CategoryId { get; set; }
@@ -55,7 +56,8 @@ namespace E_Agendamento.Application.Features.Items.Commands
             }
 
             Item item = CreateItemCommand.Map(command);
-            await _itemRepository.CreateAsync(item);
+            item = await _itemRepository.CreateAsync(item);
+            command.Id = item.Id;
 
             return new Response<CreateItemCommand>("Item cadastrado com sucesso.", command);
         }
