@@ -62,7 +62,7 @@ namespace E_Agendamento.Infrastructure.Identity.Services
             }
 
             ICollection<string> roles = await _userManager.GetRolesAsync(user);
-            ICollection<string> companies = user.Companies.Select(x => x.Id).ToList();
+            ICollection<string> companies = user.Companies.Select(x => x.Name).ToList();
 
             JwtSecurityToken jwtSecurityToken = GenerateJWToken(user, roles, companies);
             string accessToken = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
@@ -246,6 +246,33 @@ namespace E_Agendamento.Infrastructure.Identity.Services
                 "Senha recuperada com sucesso.",
                 request.Email
             );
+        }
+
+        public Response<string> VerifyToken(string token)
+        {
+            SymmetricSecurityKey authSigningKey = new(Encoding.UTF8.GetBytes(_jwtSettings.Key));
+
+            TokenValidationParameters tokenValidationParameters = new()
+            {
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateLifetime = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = authSigningKey
+            };
+
+            JwtSecurityTokenHandler tokenHandler = new();
+            _ = tokenHandler.ValidateToken(token, tokenValidationParameters,
+                out SecurityToken securityToken);
+
+            // Isco - 22/11/2023: Valida se o token é do tipo certo (JwtSecurityToken) e se o Algoritmo usado para criptografar o algoritmo é um HmacSha256
+            if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            {
+                // throw new SecurityTokenException("Token inválido/expirado.");
+                throw new ApiException("Token inválido/expirado.");
+            }
+
+            return new("Token validado com sucesso.", null);
         }
     }
 }
