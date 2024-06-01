@@ -5,6 +5,8 @@ namespace E_Agendamento.Application.Contracts.Repositories
 {
     public interface ICategoryRepository : IGenericRepository<Category>
     {
+        public Task<bool> AlreadyRegisteredByDescriptionAsync(string description, string companyId, CancellationToken cancellationToken);
         public Task<bool> ExistsByIdAsync(string categoryId, string companyId, CancellationToken cancellationToken);
+        public Task<IEnumerable<Category>> GetByCompanyAsync(string companyId, CancellationToken cancellationToken);
     }
 }
