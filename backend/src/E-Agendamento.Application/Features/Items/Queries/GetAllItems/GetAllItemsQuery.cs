@@ -9,6 +9,7 @@ namespace E_Agendamento.Application.Features.Items.Queries.GetAllItems
     {
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
+        public string CompanyId { get; set; }
     }
 
     public class GetAllItemsQueryHandler : IRequestHandler<GetAllItemsQuery, PagedResponse<IEnumerable<GetAllItemsViewModel>>>
@@ -29,9 +30,9 @@ namespace E_Agendamento.Application.Features.Items.Queries.GetAllItems
             ));
 
             // TODO:
-            //    1. fazer uma query com filtro por empresa (CompanyId)
+            //    1. fazer uma query com filtro por empresa (CompanyId) (DONE)
             //    2. fazer uma query com filtro por usuario (CreatedBy)
-            IEnumerable<Item> items = await _itemRepository.GetPagedResponseAsync(validFilter.PageNumber, validFilter.PageSize);
+            IEnumerable<Item> items = await _itemRepository.GetByCompanyPagedAsync(request.CompanyId, validFilter.PageNumber, validFilter.PageSize, cancellationToken);
             IEnumerable<GetAllItemsViewModel> viewModel = GetAllItemsViewModel.Map(items);
 
             return new(viewModel, validFilter.PageNumber, validFilter.PageSize);

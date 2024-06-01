@@ -4,6 +4,7 @@ namespace E_Agendamento.Application.Features.Items.Queries.GetAllItems
 {
     public class GetAllItemsViewModel
     {
+        public string Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string CategoryId { get; set; }
@@ -16,6 +17,7 @@ namespace E_Agendamento.Application.Features.Items.Queries.GetAllItems
         {
             return items.Select(item => new GetAllItemsViewModel
             {
+                Id = item.Id,
                 Name = item.Name,
                 Description = item.Description,
                 CategoryId = item.CategoryId,
