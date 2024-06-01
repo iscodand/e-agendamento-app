@@ -8,20 +8,23 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace E_Agendamento.WebAPI.Controllers.v1
 {
+    [Authorize]
     [Route("api/v1/items/")]
     public class ItemController : BaseController
     {
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] GetAllItemsParameter filter)
         {
-            return Ok(await Mediator.Send(new GetAllItemsQuery
+            var query = new GetAllItemsQuery()
             {
                 PageSize = filter.PageSize,
-                PageNumber = filter.PageNumber
-            }));
+                PageNumber = filter.PageNumber,
+                CompanyId = AuthenticatedUser.CompanyId
+            };
+
+            return Ok(await Mediator.Send(query));
         }
 
-        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Post(CreateItemCommand command)
         {
@@ -29,7 +32,6 @@ namespace E_Agendamento.WebAPI.Controllers.v1
             return Ok(await Mediator.Send(command));
         }
 
-        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, UpdateItemCommand command)
         {
@@ -42,7 +44,6 @@ namespace E_Agendamento.WebAPI.Controllers.v1
             return Ok(await Mediator.Send(command));
         }
 
-        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
