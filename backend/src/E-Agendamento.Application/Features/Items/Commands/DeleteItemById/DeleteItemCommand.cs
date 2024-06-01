@@ -29,7 +29,7 @@ namespace E_Agendamento.Application.Features.Items.Commands.DeleteItemById
 
             await _itemRepository.DeleteAsync(item);
 
-            return new Response<string>(item.Id);
+            return new Response<string>("Item deletado com sucesso.", item.Id);
         }
     }
 }
