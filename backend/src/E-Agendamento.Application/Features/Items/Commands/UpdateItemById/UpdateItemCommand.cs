@@ -12,8 +12,8 @@ namespace E_Agendamento.Application.Features.Items.Commands.UpdateItemById
         public string Name { get; set; }
         public string Description { get; set; }
         public int TotalQuantity { get; set; }
+        public bool IsAvailable { get; set; }
         public int QuantityAvailable { get; set; }
-        public int UpdatedBy { get; set; }
         public string CompanyId { get; set; }
 
         public static Item Map(Item item, UpdateItemCommand command)
@@ -22,6 +22,7 @@ namespace E_Agendamento.Application.Features.Items.Commands.UpdateItemById
             item.Description = command.Description;
             item.TotalQuantity = command.TotalQuantity;
             item.QuantityAvailable = command.QuantityAvailable;
+            item.IsAvailable = command.IsAvailable;
             return item;
         }
     }

@@ -46,7 +46,7 @@ namespace E_Agendamento.Application.Features.Items.Commands
             bool itemAlreadyRegistered = await _itemRepository.IsUniqueAsync(command.Name, command.CompanyId, cancellationToken);
             if (itemAlreadyRegistered)
             {
-                throw new KeyNotFoundException();
+                throw new ValidationException([new("Name", "Esse item já está cadastrado.")]);
             }
 
             bool categoryExists = await _categoryRepository.ExistsByIdAsync(command.CategoryId, command.CompanyId, cancellationToken);

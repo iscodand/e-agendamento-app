@@ -15,11 +15,13 @@ namespace E_Agendamento.Infrastructure.Data.Repositories
             _categories = context.Categories;
         }
 
-        public async Task<bool> AlreadyRegisteredByDescriptionAsync(string description, string companyId, CancellationToken cancellationToken)
+        public async Task<bool> IsUniqueAsync(string description, string companyId, CancellationToken cancellationToken, string categoryIdToComparison = "")
         {
             return await _categories.AsNoTracking()
                                     .Where(x => x.Description.ToUpper().Trim() == description.ToUpper().Trim())
-                                    .AnyAsync()
+                                    .Where(x => x.CompanyId == companyId)
+                                    .Where(x => x.Id != categoryIdToComparison)
+                                    .AnyAsync(cancellationToken)
                                     .ConfigureAwait(false);
         }
 
@@ -27,7 +29,7 @@ namespace E_Agendamento.Infrastructure.Data.Repositories
         {
             return await _categories.AsNoTracking()
                                     .Where(x => x.Id == categoryId && x.CompanyId == companyId)
-                                    .AnyAsync(cancellationToken: cancellationToken)
+                                    .AnyAsync(cancellationToken)
                                     .ConfigureAwait(false);
         }
 

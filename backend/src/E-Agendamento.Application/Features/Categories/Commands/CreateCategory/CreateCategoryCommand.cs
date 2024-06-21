@@ -33,13 +33,17 @@ namespace E_Agendamento.Application.Features.Categories.Commands.CreateCategory
 
         public async Task<Response<CreateCategoryCommand>> Handle(CreateCategoryCommand command, CancellationToken cancellationToken)
         {
-            bool categoryAlreadyExists = await _categoryRepository.AlreadyRegisteredByDescriptionAsync(command.Description, command.CompanyId, cancellationToken);
+            bool categoryAlreadyExists = await _categoryRepository.IsUniqueAsync(command.Description, command.CompanyId, cancellationToken);
             if (categoryAlreadyExists)
             {
                 throw new ValidationException([new("Description", "Uma categoria já está cadastrada com esse nome.")]);
             }
 
-            throw new NotImplementedException();
+            Category newCategory = CreateCategoryCommand.Map(command);
+            newCategory = await _categoryRepository.CreateAsync(newCategory);
+            command.Id = newCategory.Id;
+
+            return new("Categoria cadastrada com sucesso.", command);
         }
     }
 }
