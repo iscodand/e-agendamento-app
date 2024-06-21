@@ -62,7 +62,7 @@ namespace E_Agendamento.Infrastructure.Identity.Services
             }
 
             ICollection<string> roles = await _userManager.GetRolesAsync(user);
-            ICollection<string> companies = user.Companies.Select(x => x.Name).ToList();
+            ICollection<string> companies = user.Companies.Select(x => x.Id).ToList();
 
             JwtSecurityToken jwtSecurityToken = GenerateJWToken(user, roles, companies);
             string accessToken = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
