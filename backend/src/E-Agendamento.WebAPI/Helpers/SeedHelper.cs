@@ -24,7 +24,7 @@ namespace E_Agendamento.WebAPI.Helpers
                         .ServiceProvider
                         .GetService(typeof(RoleManager<ApplicationRole>));
 
-                    await Infrastructure.Identity.Seeds.DefaultSuperAdmin.SeedAsync(userManager, new CancellationToken());
+                    await Infrastructure.Identity.Seeds.DefaultUsers.SeedAsync(userManager, new CancellationToken());
                     await Infrastructure.Identity.Seeds.DefaultRoles.SeedAsync(roleManager, new CancellationToken());
                 }
                 catch (Exception ex)

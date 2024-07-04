@@ -1,17 +1,22 @@
+using System.Text.Json.Serialization;
 using E_Agendamento.Application.Contracts.Repositories;
+using E_Agendamento.Application.Exceptions;
 using E_Agendamento.Application.Wrappers;
 using E_Agendamento.Domain.Entities;
 using MediatR;
 
 namespace E_Agendamento.Application.Features.Items.Commands
 {
-    public partial class CreateItemCommand : IRequest<Response<int>>
+    public partial class CreateItemCommand : IRequest<Response<CreateItemCommand>>
     {
+        public string Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string CategoryId { get; set; }
         public int TotalQuantity { get; set; }
         public int QuantityAvailable { get; set; }
+
+        [JsonIgnore]
         public string CompanyId { get; set; }
 
         public static Item Map(CreateItemCommand command)
@@ -28,18 +33,36 @@ namespace E_Agendamento.Application.Features.Items.Commands
         }
     }
 
-    public class CreateItemHandler : IRequestHandler<CreateItemCommand, Response<int>>
+    public class CreateItemHandler : IRequestHandler<CreateItemCommand, Response<CreateItemCommand>>
     {
         private readonly IItemRepository _itemRepository;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public CreateItemHandler(IItemRepository itemRepository)
+        public CreateItemHandler(IItemRepository itemRepository, ICategoryRepository categoryRepository)
         {
             _itemRepository = itemRepository;
+            _categoryRepository = categoryRepository;
         }
 
-        public async Task<Response<int>> Handle(CreateItemCommand command, CancellationToken cancellationToken)
+        public async Task<Response<CreateItemCommand>> Handle(CreateItemCommand command, CancellationToken cancellationToken)
         {
-            return null;
+            bool itemAlreadyRegistered = await _itemRepository.IsUniqueAsync(command.Name, command.CompanyId, cancellationToken);
+            if (itemAlreadyRegistered)
+            {
+                throw new ValidationException([new("Name", "Esse item já está cadastrado.")]);
+            }
+
+            bool categoryExists = await _categoryRepository.ExistsByIdAsync(command.CategoryId, command.CompanyId, cancellationToken);
+            if (categoryExists == false)
+            {
+                throw new ValidationException([new("CategoryId", "Categoria não encontrada. Verifique e tente novamente.")]);
+            }
+
+            Item item = CreateItemCommand.Map(command);
+            item = await _itemRepository.CreateAsync(item);
+            command.Id = item.Id;
+
+            return new Response<CreateItemCommand>("Item cadastrado com sucesso.", command);
         }
     }
 }

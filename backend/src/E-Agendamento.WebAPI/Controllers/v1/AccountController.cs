@@ -1,11 +1,12 @@
 using E_Agendamento.Application.Contracts.Services;
 using E_Agendamento.Application.DTOs.Account;
 using E_Agendamento.WebAPI.Controllers.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_Agendamento.WebAPI.Controllers.v1
 {
-    [Route("v1/account/")]
+    [Route("api/v1/account/")]
     public class AccountController : BaseController
     {
         private readonly IAccountService _accountService;
@@ -26,6 +27,13 @@ namespace E_Agendamento.WebAPI.Controllers.v1
         {
             string origin = Request.Headers.Origin;
             return Ok(await _accountService.RegisterAsync(request, origin));
+        }
+
+        [Authorize]
+        [HttpGet("verify-token/")]
+        public IActionResult VerifyToken()
+        {
+            return Ok("Teste");
         }
 
         [HttpPost("confirm-email/")]
