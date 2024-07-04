@@ -1,4 +1,6 @@
+using System.Net;
 using E_Agendamento.Application.Features.Categories.Commands.CreateCategory;
+using E_Agendamento.Application.Features.Categories.Commands.DeleteCategory;
 using E_Agendamento.Application.Features.Categories.Commands.UpdateCategory;
 using E_Agendamento.Application.Features.Categories.Queries.GetCategoriesByCompany;
 using E_Agendamento.WebAPI.Controllers.Common;
@@ -43,6 +45,16 @@ namespace E_Agendamento.WebAPI.Controllers.v1
             command.CompanyId = AuthenticatedUser.CompanyId;
 
             return Ok(await Mediator.Send(command));
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            return Ok(await Mediator.Send(new DeleteCategoryCommand()
+            {
+                Id = id,
+                UserId = AuthenticatedUser.UserId
+            }));
         }
     }
 }

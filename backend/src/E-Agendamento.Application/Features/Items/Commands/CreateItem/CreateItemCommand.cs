@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using E_Agendamento.Application.Contracts.Repositories;
 using E_Agendamento.Application.Exceptions;
 using E_Agendamento.Application.Wrappers;
@@ -14,6 +15,8 @@ namespace E_Agendamento.Application.Features.Items.Commands
         public string CategoryId { get; set; }
         public int TotalQuantity { get; set; }
         public int QuantityAvailable { get; set; }
+
+        [JsonIgnore]
         public string CompanyId { get; set; }
 
         public static Item Map(CreateItemCommand command)

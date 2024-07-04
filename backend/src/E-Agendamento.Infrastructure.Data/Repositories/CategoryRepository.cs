@@ -40,5 +40,14 @@ namespace E_Agendamento.Infrastructure.Data.Repositories
                                     .ToListAsync(cancellationToken)
                                     .ConfigureAwait(false);
         }
+
+        public async Task<Category> GetWithItemsAsync(string categoryId)
+        {
+            return await _categories.AsNoTracking()
+                                    .Include(x => x.Items)
+                                    .Where(x => x.Id == categoryId)
+                                    .FirstOrDefaultAsync()
+                                    .ConfigureAwait(false);
+        }
     }
 }

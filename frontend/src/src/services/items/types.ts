@@ -1,16 +1,29 @@
 export type Item = {
-    name: string,
-    description: string,
-    categoryId: string,
-    totalQuantity: number,
-    quantityAvailable: number
-}
-
-export type InputCreateItem = {
+    id: string,
     name: string,
     description: string,
     categoryId: string,
     totalQuantity: number,
     quantityAvailable: number,
-    companyId: string
+    isAvailable: boolean
+}
+
+export type InputCreateItem = {
+    id?: string,
+    name: string,
+    description: string,
+    categoryId: string,
+    totalQuantity: number,
+    quantityAvailable: number,
+    companyId?: string
 };
+
+export type InputUpdateItem = {
+    id?: string,
+    name: string,
+    description: string,
+    categoryId: string,
+    totalQuantity: number,
+    quantityAvailable: number,
+    isAvailable: boolean
+}

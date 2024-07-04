@@ -26,6 +26,8 @@ namespace E_Agendamento.Infrastructure.Data
             services.AddScoped<IItemRepository, ItemRepository>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IScheduleRepository, ScheduleRepository>();
 
             #endregion
         }

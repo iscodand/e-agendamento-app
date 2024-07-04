@@ -1,46 +1,64 @@
 <script lang="ts" setup>
-import { defineProps, defineEmits, ref } from 'vue';
+import { defineEmits, ref, onMounted, watch } from 'vue';
 import { useItemStore } from '@/stores/items'
 import type { InputCreateItem } from '@/services/items/types';
 import TextInputComponent from "@/components/ui/input/TextInputComponent.vue";
 import NumberInputComponent from "@/components/ui/input/NumberInputComponent.vue";
 import ActionButton from '@/components/ui/buttons/ActionButton.vue';
+import ErrorMessageComponent from '@/components/ui/error/ErrorMessageComponent.vue';
 
-defineProps<{ show: boolean }>();
+defineProps<{ show: boolean, categories: any }>();
 
 const itemStore = useItemStore();
-
 const emit = defineEmits(['close', 'submit']);
+
+const errorMessages = ref<string[]>([]);
 
 let request = ref({
     name: '',
     description: '',
-    categoryId: '0bb34802-422b-4b93-b783-b2ecfa98da00',
+    categoryId: '',
     totalQuantity: 0,
     quantityAvailable: 0,
-    companyId: 'd62e9c28-dcb7-4633-adc3-0bd82678a363'
 })
 
 function hideModalHandler() {
     request = ref({
         name: '',
         description: '',
-        categoryId: '0bb34802-422b-4b93-b783-b2ecfa98da00',
+        categoryId: '',
         totalQuantity: 0,
         quantityAvailable: 0,
-        companyId: 'd62e9c28-dcb7-4633-adc3-0bd82678a363'
     })
     emit('close');
 }
 
+watch(
+    () => request.value,
+    (newVal) => {
+        errorMessages.value = [];
+        if (newVal.quantityAvailable > newVal.totalQuantity) {
+            errorMessages.value.push("A Quantidade total precisa ser maior que a quantidade disponível de itens.");
+        }
+    },
+    { deep: true }
+);
+
+
 async function handleSubmit() {
+    errorMessages.value = [];
+
+    if (request.value.quantityAvailable > request.value.totalQuantity) {
+        errorMessages.value.push("A Quantidade total precisa ser maior que a quantidade disponível de itens.");
+        return;
+    }
+
     const input: InputCreateItem = {
         name: request.value.name,
         description: request.value.description,
         categoryId: request.value.categoryId,
         totalQuantity: request.value.totalQuantity,
         quantityAvailable: request.value.quantityAvailable,
-        companyId: request.value.companyId
     };
 
     const response = await itemStore.dispatchCreateItem(input);
@@ -49,7 +67,7 @@ async function handleSubmit() {
         emit('submit', { name: request.value.name });
         hideModalHandler();
     } else {
-        console.error('Failed to create item', response.status);
+        errorMessages.value.push(response.errors![0]);
     }
 }
 </script>
@@ -64,7 +82,7 @@ async function handleSubmit() {
                     <form @submit.prevent="handleSubmit">
                         <div class="mb-4">
                             <label for="itemName" class="block text-sm font-medium text-gray-700">Nome do Item</label>
-                            <TextInputComponent v-model="request.name" placeholder="Nome do Item" />
+                            <TextInputComponent required v-model="request.name" placeholder="Nome do Item" />
                         </div>
 
                         <div class="mb-4">
@@ -74,20 +92,35 @@ async function handleSubmit() {
                         </div>
 
                         <div class="mb-4">
+                            <label for="categories"
+                                class="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
+                            <select for=" categories"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+                                v-model="request.categoryId">
+                                <option v-for="category in categories" :value="category.id">
+                                    {{ category.description }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
                             <label for="quantityAvailable" class="block text-sm font-medium text-gray-700">Quantidade
                                 Disponível</label>
-                            <NumberInputComponent v-model="request.totalQuantity" />
+                            <NumberInputComponent required v-model="request.quantityAvailable" />
                         </div>
 
                         <div class="mb-4">
                             <label for="totalQuantity" class="block text-sm font-medium text-gray-700">Quantidade
                                 Total</label>
-                            <NumberInputComponent v-model="request.quantityAvailable" />
+                            <NumberInputComponent required v-model="request.totalQuantity" />
                         </div>
 
-                        <div class="flex justify-end gap-3">
-                            <ActionButton color="red" @click="hideModalHandler">Cancelar</ActionButton>
-                            <ActionButton @click="handleSubmit" color="green">Cadastrar</ActionButton>
+                        <ErrorMessageComponent :messages="errorMessages" />
+
+                        <div class="flex gap-52">
+                            <ActionButton color="red" @click="hideModalHandler">Cancelar
+                            </ActionButton>
+                            <ActionButton class="justify-end" type="submit" color="green">Cadastrar</ActionButton>
                         </div>
                     </form>
                 </div>

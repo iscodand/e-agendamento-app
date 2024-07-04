@@ -1,6 +1,6 @@
 <template>
     <div>
-        <button type="button" :class="buttonClasses">
+        <button :type="type" :class="buttonClasses">
             <slot />
         </button>
     </div>
@@ -14,9 +14,10 @@ const props = defineProps({
     color: {
         type: String as () => 'blue' | 'green' | 'light-green' | 'red' | 'yellow' | 'disabled' | 'default',
         default: 'default'
-    }
+    },
     type: {
-        type: sumbit
+        type: String as () => 'button' | 'submit',
+        default: 'button'
     }
 });
 

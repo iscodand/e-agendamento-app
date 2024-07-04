@@ -34,7 +34,7 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
 
                     b.HasIndex("UsersId");
 
-                    b.ToTable("ApplicationUserCompany");
+                    b.ToTable("ApplicationUserCompany", (string)null);
                 });
 
             modelBuilder.Entity("E_Agendamento.Domain.Entities.ApplicationRole", b =>
@@ -165,7 +165,7 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("E_Agendamento.Domain.Entities.Company", b =>
@@ -187,7 +187,7 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Companies");
+                    b.ToTable("Companies", (string)null);
                 });
 
             modelBuilder.Entity("E_Agendamento.Domain.Entities.Item", b =>
@@ -234,7 +234,7 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Items");
+                    b.ToTable("Items", (string)null);
                 });
 
             modelBuilder.Entity("E_Agendamento.Domain.Entities.Schedule", b =>
@@ -276,7 +276,7 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
 
                     b.HasIndex("RequestedById");
 
-                    b.ToTable("Schedules");
+                    b.ToTable("Schedules", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
