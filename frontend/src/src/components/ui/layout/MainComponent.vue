@@ -7,10 +7,12 @@ const useAuth = authStore();
 
 const user: User = {
   username: useAuth.userName,
-  email: 'teste',
-  roles: ['SuperAdmin'],
+  email: "",
+  roles: useAuth.getRoles,
   company: 'Empresa Foda'
 };
+
+console.log(user);
 
 </script>
 
