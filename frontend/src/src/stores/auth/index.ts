@@ -3,14 +3,15 @@ import { API } from "@/services";
 import type { Login, LoginResponse, VerifyToken } from "@/services/auth/types";
 import type { APIResponse } from "@/services/types";
 import type { AxiosError } from "axios";
+import axios from "axios";
 import { defineStore } from "pinia";
 import { computed, ref, type Ref } from "vue";
 
 export const authStore = defineStore("authStore", () => {
     const token = ref(localStorage.getItem('token'));
     const storedUser = localStorage.getItem('user');
-    const company = localStorage.getItem('company');
     const user = ref(storedUser ? JSON.parse(storedUser) : {});
+    const roles = ref<string[]>();
 
     const isAuth: Ref<boolean> = ref(false);
 
@@ -21,7 +22,9 @@ export const authStore = defineStore("authStore", () => {
             if (status === 200) {
                 setToken(data.data!.accessToken)
                 setUser(data.data!.userName)
-                setCompany(data.data!.companies[0])
+                setRoles(data.data!.roles)
+
+                console.log(roles)
             }
 
             return {
@@ -77,13 +80,18 @@ export const authStore = defineStore("authStore", () => {
         user.value = userValue;
     }
 
-    function setCompany(companyId: string): void {
-        localStorage.setItem('company', JSON.stringify(companyId));
+    function setRoles(newRoles: string[]) : void {
+        roles.value = newRoles;
     }
 
     const isAuthenticated = computed(async () => {
         return (await dispatchVerifyToken()).succeeded;
     })
+
+    function refresh() {
+        const test = ['Basic']
+        setRoles(test)
+    }
 
     const userName = computed(() => {
         if (user.value) {
@@ -92,8 +100,11 @@ export const authStore = defineStore("authStore", () => {
         return '';
     })
 
-    const getCompany = computed(() => {
-
+    const getRoles = computed(() => {
+        if (roles.value) {
+            return roles.value
+        }
+        return [];
     })
 
     function clear() {
@@ -113,6 +124,8 @@ export const authStore = defineStore("authStore", () => {
         setIsAuthenticated,
         isAuthenticated,
         userName,
+        getRoles,
+        refresh,
         clear,
         setToken,
         setUser
