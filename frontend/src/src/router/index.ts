@@ -32,6 +32,14 @@ const router = createRouter({
             meta: {
                 auth: true
             }
+        },
+        {
+            path: '/empresas',
+            name: 'companies',
+            component: () => import('@/views/companies/CompaniesView.vue'),
+            meta: {
+                auth: true
+            }
         }
     ]
 })
