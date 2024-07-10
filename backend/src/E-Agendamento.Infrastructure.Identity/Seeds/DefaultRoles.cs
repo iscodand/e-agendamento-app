@@ -9,12 +9,9 @@ namespace E_Agendamento.Infrastructure.Identity.Seeds
     {
         public static async Task SeedAsync(RoleManager<ApplicationRole> roleManager, CancellationToken cancellationToken)
         {
-            if (await roleManager.Roles.AnyAsync(cancellationToken) == false)
-            {
-                await roleManager.CreateAsync(ApplicationRole.Create(nameof(Roles.SuperAdmin), "Super Administrador"));
-                await roleManager.CreateAsync(ApplicationRole.Create(nameof(Roles.Admin), "Administrador"));
-                await roleManager.CreateAsync(ApplicationRole.Create(nameof(Roles.Basic), "Basico"));
-            }
+            await roleManager.CreateAsync(ApplicationRole.Create(nameof(Roles.SuperAdmin), "Super Administrador"));
+            await roleManager.CreateAsync(ApplicationRole.Create(nameof(Roles.Admin), "Administrador"));
+            await roleManager.CreateAsync(ApplicationRole.Create(nameof(Roles.Basic), "Basico"));
         }
     }
 }

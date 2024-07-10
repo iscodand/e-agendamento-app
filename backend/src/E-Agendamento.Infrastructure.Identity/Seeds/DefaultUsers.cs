@@ -22,7 +22,7 @@ namespace E_Agendamento.Infrastructure.Identity.Seeds
 
             RegisterRequest basic = new()
             {
-                FullName = "José Carlos",
+                FullName = "Josï¿½ Carlos",
                 UserName = "jose",
                 Email = "jose@email.com",
                 Roles = [nameof(Roles.Basic)],
@@ -38,6 +38,9 @@ namespace E_Agendamento.Infrastructure.Identity.Seeds
 
                 await userManager.CreateAsync(newSuperAdmin, superAdmin.Password);
                 await userManager.CreateAsync(newBasicUser, basic.Password);
+
+                await userManager.AddToRolesAsync(newSuperAdmin, superAdmin.Roles);
+                await userManager.AddToRolesAsync(newBasicUser, basic.Roles);
             }
         }
     }

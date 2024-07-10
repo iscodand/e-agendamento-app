@@ -11,7 +11,6 @@ namespace E_Agendamento.WebAPI.Helpers
             {
                 try
                 {
-
                     UserManager<ApplicationUser> userManager = (UserManager<ApplicationUser>)scope
                         .ServiceProvider
                         .GetService(typeof(UserManager<ApplicationUser>));
@@ -24,8 +23,8 @@ namespace E_Agendamento.WebAPI.Helpers
                         .ServiceProvider
                         .GetService(typeof(RoleManager<ApplicationRole>));
 
-                    await Infrastructure.Identity.Seeds.DefaultUsers.SeedAsync(userManager, new CancellationToken());
                     await Infrastructure.Identity.Seeds.DefaultRoles.SeedAsync(roleManager, new CancellationToken());
+                    await Infrastructure.Identity.Seeds.DefaultUsers.SeedAsync(userManager, new CancellationToken());
                 }
                 catch (Exception ex)
                 {

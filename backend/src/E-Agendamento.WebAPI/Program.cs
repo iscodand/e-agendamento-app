@@ -47,6 +47,7 @@ builder.Services.AddIdentityInfrastructure(builder.Configuration);
 var app = builder.Build();
 
 // Seed Database
+await app.MigrateAsync();
 await app.SeedDatabaseAsync();
 
 // Configure the HTTP request pipeline.
