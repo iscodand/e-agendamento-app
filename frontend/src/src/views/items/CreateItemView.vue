@@ -118,8 +118,7 @@ async function handleSubmit() {
                         <ErrorMessageComponent :messages="errorMessages" />
 
                         <div class="flex gap-52">
-                            <ActionButton color="red" @click="hideModalHandler">Cancelar
-                            </ActionButton>
+                            <ActionButton color="red" @click="hideModalHandler">Cancelar</ActionButton>
                             <ActionButton class="justify-end" type="submit" color="green">Cadastrar</ActionButton>
                         </div>
                     </form>

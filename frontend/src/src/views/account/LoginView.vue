@@ -42,7 +42,7 @@ async function handleSubmit() {
           <span class="flex ms-2">
             <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 me-3" alt="FlowBite Logo" />
             <span
-              class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-gray-800">E-Agendamento</span>
+              class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap text-gray-800">E-Agendamento</span>
           </span>
         </div>
 
@@ -66,7 +66,7 @@ async function handleSubmit() {
 
         <ErrorMessageComponent :messages="errorMessages" />
 
-        <a href="/teste" class="text-sm text-end dark:text-gray-800 hover:text-gray-700">Esqueceu sua senha?</a>
+        <a href="/teste" class="text-sm text-end text-gray-800 hover:text-gray-700">Esqueceu sua senha?</a>
 
         <div class="text-center">
           <ActionButton type="submit" color="blue">Login</ActionButton>
