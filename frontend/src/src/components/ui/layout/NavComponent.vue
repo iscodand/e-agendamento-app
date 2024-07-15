@@ -20,13 +20,13 @@ const isAdmin: Boolean = props.user.roles.includes('Admin');
 
 <template>
   <div>
-    <nav class="fixed top-0 z-50 w-full border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+    <nav class="fixed top-0 z-50 w-full border-b border-gray-200 bg-gray-800 border-gray-700">
       <div class="px-3 py-3 lg:px-5 lg:pl-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center justify-start rtl:justify-end">
             <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar"
               type="button"
-              class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+              class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 text-gray-400 hover:bg-gray-700 focus:ring-gray-600">
               <span class="sr-only">Open sidebar</span>
               <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg">
@@ -38,7 +38,7 @@ const isAdmin: Boolean = props.user.roles.includes('Admin');
             <a class="flex ms-2 md:me-24">
               <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 me-3" alt="FlowBite Logo" />
               <span
-                class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">E-Agendamento</span>
+                class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap text-white">E-Agendamento</span>
             </a>
           </div>
           <div class="flex items-center">
@@ -46,7 +46,7 @@ const isAdmin: Boolean = props.user.roles.includes('Admin');
               <span class="username mr-4 text-white">Olá, {{ user.username }}</span>
               <div>
                 <button type="button"
-                  class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                  class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 focus:ring-gray-600"
                   aria-expanded="false" data-dropdown-toggle="dropdown-user">
                   <span class="sr-only">Open user menu</span>
                   <img class="w-8 h-8 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
@@ -54,23 +54,23 @@ const isAdmin: Boolean = props.user.roles.includes('Admin');
                 </button>
               </div>
               <div
-                class="z-50 hidden my-4 text-base list-none divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
+                class="z-50 hidden my-4 text-base list-none divide-y divide-gray-100 rounded shadow bg-gray-700 divide-gray-600"
                 id="dropdown-user">
                 <div class="px-4 py-3" role="none">
-                  <p class="text-sm text-gray-900 dark:text-white" role="none">{{ user.roles }}</p>
-                  <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
+                  <p class="text-sm text-gray-900 text-white" role="none">{{ user.roles }}</p>
+                  <p class="text-sm font-medium text-gray-900 truncate text-gray-300" role="none">
                     {{ user.email }}
                   </p>
                 </div>
                 <ul class="py-1" role="none">
                   <li>
                     <a href="#"
-                      class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+                      class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 text-gray-300 hover:bg-gray-600 hover:text-white"
                       role="menuitem">Meu Perfil</a>
                   </li>
                   <li>
                     <button @click="handleLogout" type="submit"
-                      class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+                      class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 text-gray-300 hover:bg-gray-600 hover:text-white"
                       role="menuitem">
                       Sair
                     </button>
@@ -84,9 +84,9 @@ const isAdmin: Boolean = props.user.roles.includes('Admin');
     </nav>
 
     <aside id="logo-sidebar"
-      class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
+      class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full border-r border-gray-200 sm:translate-x-0 bg-gray-800 border-gray-700"
       aria-label="Sidebar">
-      <div class="h-full px-3 pb-4 overflow-y-auto dark:bg-gray-800">
+      <div class="h-full px-3 pb-4 overflow-y-auto bg-gray-800">
         <ul class="space-y-2 font-medium">
 
           <ItemListComponent link="/home" title="Home" />
@@ -95,8 +95,10 @@ const isAdmin: Boolean = props.user.roles.includes('Admin');
             :icon="ClockIcon" />
           <ItemListComponent link="/categorias" title="Categorias" :icon="SwatchIcon" />
           <ItemListComponent link="/items" title="Itens" :icon="TagIcon" />
-          <ItemListComponent link="/funcionarios" title="Funcionários" :icon="UsersIcon" />
-          <ItemListComponent link="/empresas" title="Empresas" :icon="BuildingOffice2Icon" />
+          <ItemListComponent v-if="isAdmin || isSuperAdmin" link="/funcionarios" title="Funcionários"
+            :icon="UsersIcon" />
+          <ItemListComponent v-if="isAdmin || isSuperAdmin" link="/empresas" title="Empresas"
+            :icon="BuildingOffice2Icon" />
 
         </ul>
       </div>
