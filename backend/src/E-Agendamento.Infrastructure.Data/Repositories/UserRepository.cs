@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using E_Agendamento.Application.Contracts.Repositories;
 using E_Agendamento.Domain.Entities;
 using E_Agendamento.Infrastructure.Data.Context;
@@ -21,6 +22,14 @@ namespace E_Agendamento.Infrastructure.Data.Repositories
                             .Include(x => x.Companies)
                             .Where(x => x.Id == userId)
                             .FirstOrDefaultAsync()
+                            .ConfigureAwait(false);
+        }
+
+        public async Task<bool> UserInCompanyAsync(string userId, string companyId)
+        {
+            return await _users.AsNoTracking()
+                            .Include(x => x.Companies)
+                            .AnyAsync(x => x.Companies.Select(x => x.Id).Contains(companyId))
                             .ConfigureAwait(false);
         }
     }

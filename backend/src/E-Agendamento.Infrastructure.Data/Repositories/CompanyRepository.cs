@@ -21,5 +21,13 @@ namespace E_Agendamento.Infrastructure.Data.Repositories
             await UpdateAsync(company);
             return true;
         }
+
+        public async Task<bool> ExistsByCNPJAsync(string cnpj)
+        {
+            return await _companies.AsNoTracking()
+                                .Where(x => x.CNPJ.ToUpper().Trim() == cnpj.ToUpper().Trim())
+                                .AnyAsync()
+                                .ConfigureAwait(false);
+        }
     }
 }
