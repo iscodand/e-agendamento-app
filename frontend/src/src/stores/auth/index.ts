@@ -89,7 +89,7 @@ export const authStore = defineStore("authStore", () => {
     })
 
     function refresh() {
-        const test = ['Basic']
+        const test = ['SuperAdmin']
         setRoles(test)
     }
 
