@@ -58,39 +58,40 @@ namespace E_Agendamento.Infrastructure.Data.Context
             //     property.SetColumnType("decimal(18,6)");
             // }
 
+
             builder.Entity<ApplicationUser>(entity =>
             {
-                entity.ToTable(name: "USERS");
+                entity.ToTable(name: "Users");
             });
 
             builder.Entity<ApplicationRole>(entity =>
             {
-                entity.ToTable(name: "ROLES");
+                entity.ToTable(name: "Roles");
             });
 
             builder.Entity<IdentityUserRole<string>>(entity =>
             {
-                entity.ToTable(name: "USER_ROLES");
+                entity.ToTable(name: "User_Roles");
             });
 
             builder.Entity<IdentityUserClaim<string>>(entity =>
             {
-                entity.ToTable(name: "USER_CLAIMS");
+                entity.ToTable(name: "User_Claims");
             });
 
             builder.Entity<IdentityUserLogin<string>>(entity =>
             {
-                entity.ToTable(name: "USER_LOGINS");
+                entity.ToTable(name: "User_Logins");
             });
 
             builder.Entity<IdentityRoleClaim<string>>(entity =>
             {
-                entity.ToTable(name: "ROLE_CLAIMS");
+                entity.ToTable(name: "Role_Claims");
             });
 
             builder.Entity<IdentityUserToken<string>>(entity =>
             {
-                entity.ToTable(name: "USER_TOKENS");
+                entity.ToTable(name: "User_Tokens");
             });
         }
     }
