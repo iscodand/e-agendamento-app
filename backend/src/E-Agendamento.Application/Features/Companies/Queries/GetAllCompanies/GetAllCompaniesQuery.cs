@@ -28,9 +28,10 @@ namespace E_Agendamento.Application.Features.Companies.Queries.GetAllCompanies
             ));
 
             IEnumerable<Company> companies = await _companyRepository.GetPagedResponseAsync(validFilter.PageNumber, validFilter.PageSize);
+            int totalCompaniesCount = await _companyRepository.GetTotalItemsCountAsync();
             IEnumerable<GetAllCompaniesViewModel> viewModel = GetAllCompaniesViewModel.Map(companies);
 
-            return new(viewModel, validFilter.PageNumber, validFilter.PageSize);
+            return new(viewModel, validFilter.PageNumber, validFilter.PageSize, totalCompaniesCount);
         }
     }
 }
