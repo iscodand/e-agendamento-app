@@ -16,6 +16,15 @@ namespace E_Agendamento.Infrastructure.Data.Repositories
             _users = context.Users;
         }
 
+        public async Task<IEnumerable<ApplicationUser>> GetUsersByCompanyAsync(string companyId)
+        {
+            return await _users.AsNoTracking()
+                            .Include(x => x.Companies)
+                            .Where(x => x.Companies.Select(x => x.Id).Contains(companyId))
+                            .ToListAsync()
+                            .ConfigureAwait(false);
+        }
+
         public async Task<ApplicationUser> GetWithCompaniesAsync(string userId)
         {
             return await _users.AsNoTracking()
