@@ -3,7 +3,9 @@ import MainComponent from '@/components/ui/layout/MainComponent.vue'
 import CreateCompanyView from './CreateCompanyView.vue';
 import { useCompanyStore } from '@/stores/companies';
 import { BuildingOffice2Icon } from "@heroicons/vue/24/outline";
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, type Ref } from 'vue';
+import PaginationComponent from '@/components/ui/pagination/PaginationComponent.vue';
+import type { RequestParameters } from '@/services/types';
 
 const companyStore = useCompanyStore();
 const companies: any = ref([]);
@@ -18,14 +20,27 @@ function hideCreateCompanyModalHandler() {
     showCreateCompanyModal.value = false;
 }
 
-onMounted(async () => {
-    const { succeeded, data } = await companyStore.dispatchGetCompanies();
+const parameters: RequestParameters = {
+    pageSize: 8,
+    pageNumber: 1
+}
+
+const totalPages: Ref<number> = ref<number>(0);
+
+const fetchCompanies = async (pageNumber: number = 1) => {
+    parameters.pageNumber = pageNumber;
+    const { succeeded, data, totalItems } = await companyStore.dispatchGetCompanies(parameters);
 
     if (succeeded) {
-        companies.value = data;
+        companies.value = data!;
+        totalPages.value = Math.ceil(totalItems! / parameters.pageSize);
     } else {
-        console.log("Falha ao tentar recuperar empresas. Verifique o desenvolvedor.")
+        console.log('deu ruim');
     }
+};
+
+onMounted(async () => {
+    await fetchCompanies();
 })
 
 </script>
@@ -41,17 +56,20 @@ onMounted(async () => {
                             duration-75 text-gray-400 group-hover:text-gray-900 group-hover:text-white" />
                         <p class="text-3xl font-bold text-gray-400 text-gray-800 ml-4">Empresas</p>
                     </div>
-                    <div class="flex items-center justify-end h-24 rounded">
-                        <button @click="showCreateCompanyModalHandler"
-                            class="text-white bg-green-800 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 bg-green-600 hover:bg-green-700 focus:ring-green-800">
-                            Adicionar nova empresa
-                        </button>
+
+                    <div class="mb-4">
+                        <div class="flex items-center justify-end h-24 rounded">
+                            <button @click="showCreateCompanyModalHandler"
+                                class="text-white bg-green-800 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 bg-green-600 hover:bg-green-700 focus:ring-green-800">
+                                Adicionar nova empresa
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 bg-gray-700 text-gray-400">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 bg-gray-700 text-white">
                             <tr>
                                 <th scope="col" class="px-8 py-3">Nome</th>
                                 <th scope="col" class="px-8 py-3">CNPJ</th>
@@ -61,7 +79,7 @@ onMounted(async () => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class=" bg-white border-b bg-gray-800 border-gray-700 hover:bg-gray-50 hover:bg-gray-600"
+                            <tr class=" bg-white border-b bg-gray-800 border-gray-700"
                                 v-for="(company, index) in companies" :key="index">
                                 <td class="px-8 py-4">{{ company.name }}</td>
                                 <td class="px-8 py-4">{{ company.cnpj }}</td>
@@ -96,6 +114,11 @@ onMounted(async () => {
                         </tbody>
                     </table>
                 </div>
+            </div>
+
+            <div class="text-center">
+                <PaginationComponent :total-pages="totalPages" :current-page="parameters.pageNumber"
+                    @page-changed="fetchCompanies" />
             </div>
         </div>
     </div>

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 
+import RouteParamsRaw from 'vue-router';
+
 defineProps({
   link: {
     type: String,
@@ -8,8 +10,10 @@ defineProps({
   title: {
     type: String
   },
-  icon: {
-    type: Object
+  icon: {},
+  parameters: {
+    // type: undefined,
+    required: false
   }
 });
 </script>

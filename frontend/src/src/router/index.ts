@@ -10,6 +10,11 @@ const router = createRouter({
             component: () => import('../views/account/LoginView.vue')
         },
         {
+            path: '/meus-agendamentos',
+            name: 'my-schedules',
+            component: () => import('../views/schedules/MySchedulesView.vue')
+        },
+        {
             path: '/items',
             name: 'item',
             component: () => import('../views/items/ItemsView.vue'),
@@ -28,7 +33,7 @@ const router = createRouter({
         {
             path: '/funcionarios',
             name: 'employees',
-            component: () => import('../views/categories/CategoriesView.vue'),
+            component: () => import('../views/employees/EmployeesView.vue'),
             meta: {
                 auth: true
             }

@@ -16,6 +16,8 @@
   "dependencies": {
     "@heroicons/vue": "^2.1.4",
     "axios": "^1.6.8",
+    "flowbite": "^2.4.1",
+    "flowbite-vue": "^0.1.5",
     "pinia": "^2.1.7",
     "ts-node": "^10.9.2",
     "vue": "^3.4.21",

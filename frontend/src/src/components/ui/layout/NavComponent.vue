@@ -89,7 +89,7 @@ const isAdmin: Boolean = props.user.roles.includes('Admin');
       <div class="h-full px-3 pb-4 overflow-y-auto bg-gray-800">
         <ul class="space-y-2 font-medium">
 
-          <ItemListComponent link="/home" title="Home" />
+          <ItemListComponent link="/home" title="Home" parameters="{}" />
           <ItemListComponent link="/meus-agendamentos" title="Meus Agendamentos" :icon="ClockIcon" />
           <ItemListComponent v-if="isAdmin || isSuperAdmin" link="/agendamentos" title="Todos os Agendamentos"
             :icon="ClockIcon" />
@@ -99,7 +99,6 @@ const isAdmin: Boolean = props.user.roles.includes('Admin');
             :icon="UsersIcon" />
           <ItemListComponent v-if="isAdmin || isSuperAdmin" link="/empresas" title="Empresas"
             :icon="BuildingOffice2Icon" />
-
         </ul>
       </div>
     </aside>
