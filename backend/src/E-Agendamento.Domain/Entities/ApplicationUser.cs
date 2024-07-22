@@ -13,6 +13,7 @@ namespace E_Agendamento.Domain.Entities
         public bool IsActive { get; set; }
 
         public ICollection<Company> Companies { get; set; } = [];
+        public ICollection<ApplicationRole> Roles { get; set; } = [];
         // public ICollection<Schedule> Schedules { get; set; }
 
         public ApplicationUser()
