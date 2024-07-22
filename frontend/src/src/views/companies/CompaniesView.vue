@@ -52,15 +52,15 @@ onMounted(async () => {
             <div class="p-5 mt-14">
                 <div class="grid grid-cols-2 gap-4">
                     <div class="flex items-center h-24 rounded">
-                        <BuildingOffice2Icon class=" flex-shrink-0 w-7 h-7 text-gray-800 transition
-                            duration-75 text-gray-400 group-hover:text-gray-900 group-hover:text-white" />
-                        <p class="text-3xl font-bold text-gray-400 text-gray-800 ml-4">Empresas</p>
+                        <BuildingOffice2Icon class=" flex-shrink-0 w-7 h-7 transition
+                            duration-75 text-gray-400 group-hover:text-gray-900" />
+                        <p class="text-3xl font-bold text-gray-400 ml-4">Empresas</p>
                     </div>
 
                     <div class="mb-4">
                         <div class="flex items-center justify-end h-24 rounded">
                             <button @click="showCreateCompanyModalHandler"
-                                class="text-white bg-green-800 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 bg-green-600 hover:bg-green-700 focus:ring-green-800">
+                                class="text-white bg-green-800 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2">
                                 Adicionar nova empresa
                             </button>
                         </div>
@@ -68,8 +68,8 @@ onMounted(async () => {
                 </div>
 
                 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 bg-gray-700 text-white">
+                    <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-8 py-3">Nome</th>
                                 <th scope="col" class="px-8 py-3">CNPJ</th>
@@ -79,8 +79,8 @@ onMounted(async () => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class=" bg-white border-b bg-gray-800 border-gray-700"
-                                v-for="(company, index) in companies" :key="index">
+                            <tr class=" bg-white border-b border-gray-700" v-for="(company, index) in companies"
+                                :key="index">
                                 <td class="px-8 py-4">{{ company.name }}</td>
                                 <td class="px-8 py-4">{{ company.cnpj }}</td>
                                 <td v-if="company.description" class="px-8 py-4">{{ company.description }}</td>
@@ -97,9 +97,9 @@ onMounted(async () => {
                                 </td>
                                 <td class="py-4">
                                     <!-- Modal toggle -->
-                                    <a class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4
-                                        focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2
-                                        bg-blue-600 hover:bg-blue-700 focus:ring-blue-800">
+                                    <a
+                                        class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4
+                                        focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2">
                                         Detalhes
                                     </a>
                                     <!-- <a @click="showUpdateItemModalHandler(item)" type="button" ">
