@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { FwbPagination } from 'flowbite-vue'
 import { ref, watch, defineProps, defineEmits } from 'vue'
 
 const props = defineProps({
@@ -27,6 +26,6 @@ function onPageChange(page: number) {
 </script>
 
 <template>
-    <fwb-pagination v-model="currentPage" :total-pages="totalPages" @change="onPageChange" previous-label="<< Anterior"
-        next-label="Próxima >>"></fwb-pagination>
+    <!-- <fwb-pagination v-model="currentPage" :total-pages="totalPages" @change="onPageChange" previous-label="<< Anterior"
+        next-label="Próxima >>"></fwb-pagination> -->
 </template>
