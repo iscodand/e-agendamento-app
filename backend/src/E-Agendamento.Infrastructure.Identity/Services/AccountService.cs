@@ -1,5 +1,4 @@
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
 using E_Agendamento.Application.Contracts.Repositories;
 using E_Agendamento.Application.Contracts.Services;
@@ -8,11 +7,9 @@ using E_Agendamento.Application.DTOs.Email;
 using E_Agendamento.Application.Exceptions;
 using E_Agendamento.Application.Wrappers;
 using E_Agendamento.Domain.Entities;
-using E_Agendamento.Infrastructure.Identity.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace E_Agendamento.Infrastructure.Identity.Services
@@ -20,16 +17,20 @@ namespace E_Agendamento.Infrastructure.Identity.Services
     public class AccountService : IAccountService
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly JWTSettings _jwtSettings;
+        private readonly ITokenService _tokenService;
         private readonly IEmailService _emailService;
         private readonly ICompanyRepository _companyRepository;
 
-        public AccountService(UserManager<ApplicationUser> userManager, IOptions<JWTSettings> jwtSettings, IEmailService emailService, ICompanyRepository companyRepository)
+        public AccountService(UserManager<ApplicationUser> userManager,
+                              IEmailService emailService,
+                              ICompanyRepository companyRepository,
+                              ITokenService tokenService)
         {
             _userManager = userManager;
-            _jwtSettings = jwtSettings.Value;
+            _tokenService = tokenService;
             _emailService = emailService;
             _companyRepository = companyRepository;
+            _tokenService = tokenService;
         }
 
         public async Task<Response<AuthenticationResponse>> AuthenticateAsync(AuthenticationRequest request)
@@ -64,7 +65,7 @@ namespace E_Agendamento.Infrastructure.Identity.Services
             ICollection<string> roles = await _userManager.GetRolesAsync(user);
             ICollection<string> companies = user.Companies.Select(x => x.Id).ToList();
 
-            JwtSecurityToken jwtSecurityToken = GenerateJWToken(user, roles, companies);
+            JwtSecurityToken jwtSecurityToken = _tokenService.GenerateJWToken(user, roles, companies);
             string accessToken = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 
             AuthenticationResponse response = new()
@@ -80,41 +81,34 @@ namespace E_Agendamento.Infrastructure.Identity.Services
             return new Response<AuthenticationResponse>("Autenticação realizada com sucesso.", response);
         }
 
-        private JwtSecurityToken GenerateJWToken(ApplicationUser user, ICollection<string> roles, ICollection<string> companies)
+        public async Task<Response<RetrieveUserResponse>> GetAuthenticatedUserAsync(string userId)
         {
-            List<Claim> roleClaims = [];
-            foreach (string role in roles)
+            ApplicationUser user = await _userManager.Users
+                .Include(x => x.Companies)
+                .Where(x => x.Id == userId)
+                .FirstOrDefaultAsync()
+                .ConfigureAwait(false);
+
+            if (user is null)
             {
-                roleClaims.Add(new Claim("role", role));
+                // TODO => melhorar mensagem de erro
+                throw new ApiException("Procedimento Inválido. Realize o login e tente novamente.");
             }
 
-            List<Claim> companyClaims = [];
-            foreach (string company in companies)
+            ICollection<string> roles = await _userManager.GetRolesAsync(user);
+            ICollection<string> companies = user.Companies.Select(x => x.Id).ToList();
+
+            RetrieveUserResponse response = new()
             {
-                companyClaims.Add(new Claim("companyId", company));
-            }
+                Id = user.Id,
+                FullName = user.FullName,
+                UserName = user.UserName,
+                Email = user.Email,
+                Roles = roles,
+                Companies = companies
+            };
 
-            IEnumerable<Claim> claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Name, user.FullName),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("uid", user.Id),
-            }.Union(roleClaims)
-             .Union(companyClaims);
-
-            SymmetricSecurityKey symmetricSecurityKey = new(Encoding.UTF8.GetBytes(_jwtSettings.Key));
-            SigningCredentials signingCredentials = new(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
-
-            var jwtSecurityToken = new JwtSecurityToken(
-                issuer: _jwtSettings.Issuer,
-                audience: _jwtSettings.Audience,
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.DurationInMinutes),
-                signingCredentials: signingCredentials
-            );
-
-            return jwtSecurityToken;
+            return new Response<RetrieveUserResponse>("Usuário recuperado com sucesso.", response);
         }
 
         public async Task<Response<string>> RegisterAsync(RegisterRequest request, string origin)
@@ -250,7 +244,7 @@ namespace E_Agendamento.Infrastructure.Identity.Services
 
         public Response<string> VerifyToken(string token)
         {
-            SymmetricSecurityKey authSigningKey = new(Encoding.UTF8.GetBytes(_jwtSettings.Key));
+            SymmetricSecurityKey authSigningKey = _tokenService.AuthSigningKey();
 
             TokenValidationParameters tokenValidationParameters = new()
             {

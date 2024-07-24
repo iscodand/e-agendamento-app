@@ -36,6 +36,13 @@ namespace E_Agendamento.WebAPI.Controllers.v1
             return Ok("Teste");
         }
 
+        [Authorize]
+        [HttpGet("me/")]
+        public async Task<IActionResult> GetAuthenticatedUserAsync()
+        {
+            return Ok(await _accountService.GetAuthenticatedUserAsync(AuthenticatedUser.UserId));
+        }
+
         [HttpPost("confirm-email/")]
         public async Task<IActionResult> ConfirmEmailAsync([FromQuery] string userId, [FromQuery] string code)
         {
