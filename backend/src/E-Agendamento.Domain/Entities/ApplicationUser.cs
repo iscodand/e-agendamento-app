@@ -12,6 +12,10 @@ namespace E_Agendamento.Domain.Entities
         public string FullName { get; set; }
         public bool IsActive { get; set; }
 
+        // TODO => refresh token implementation
+        // public string RefreshToken { get; set; }
+        // public DateTime RefreshTokenValidityTime { get; set; }
+
         public ICollection<Company> Companies { get; set; } = [];
         public ICollection<ApplicationRole> Roles { get; set; } = [];
         // public ICollection<Schedule> Schedules { get; set; }
