@@ -6,6 +6,10 @@ import { ref } from "vue";
 import type { InputCreateCompany } from "@/services/companies/types";
 import { useCompanyStore } from "@/stores/companies";
 
+//
+import Button from "primevue/button";
+import ButtonGroup from "primevue/buttongroup";
+
 defineProps<{ show: boolean }>();
 
 const companyStore = useCompanyStore();
@@ -24,6 +28,7 @@ function hideModalHandler() {
         description: '',
         cnpj: ''
     })
+    errorMessages.value = [];
     emit('close');
 }
 
@@ -75,10 +80,13 @@ async function handleSubmit() {
 
                             <ErrorMessageComponent :messages="errorMessages" />
 
-                            <div class="flex gap-52">
-                                <!-- @click="hideModalHandler" -->
-                                <ActionButton @click="hideModalHandler" color="red">Cancelar</ActionButton>
-                                <ActionButton class="justify-end" type="submit" color="green">Cadastrar</ActionButton>
+                            <div class="flex gap-52 mt-4">
+                                <Button size="small" @click="hideModalHandler" label="Cancelar" severity="danger"
+                                    icon="pi pi-times" />
+                                <Button size="small" label="Cadastrar" type="submit" severity="success"
+                                    icon="pi pi-check" />
+                                <!-- <ActionButton @click="hideModalHandler" color="red">Cancelar</ActionButton>
+                                <ActionButton class="justify-end" type="submit" color="green">Cadastrar</ActionButton> -->
                             </div>
                         </form>
                     </div>

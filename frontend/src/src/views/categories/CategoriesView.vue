@@ -52,7 +52,7 @@ onMounted(async () => {
     <div>
         <MainComponent />
         <div class="p-4 sm:ml-64">
-            <div class="p-5 mt-14">
+            <div class="p-5">
                 <div class="grid grid-cols-2 gap-4">
                     <div class="flex items-center h-24 rounded">
                         <SwatchIcon
