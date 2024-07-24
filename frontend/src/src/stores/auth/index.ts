@@ -2,8 +2,8 @@ import router from "@/router";
 import { API } from "@/services";
 import type { Login, LoginResponse, VerifyToken } from "@/services/auth/types";
 import type { APIResponse } from "@/services/types";
+import type { User } from "@/services/user/types";
 import type { AxiosError } from "axios";
-import axios from "axios";
 import { defineStore } from "pinia";
 import { computed, ref, type Ref } from "vue";
 
@@ -45,6 +45,30 @@ export const authStore = defineStore("authStore", () => {
     async function dispatchVerifyToken(): Promise<APIResponse<string>> {
         try {
             const { status, data } = await API.auth.verifyToken(token.value!);
+
+            return {
+                succeeded: true,
+                data: data.data,
+                status: status
+            }
+        } catch (error) {
+            const _error = error as AxiosError<string>;
+
+            clear();
+            router.push('/login')
+            console.log('error', _error.response?.data)
+
+            return {
+                succeeded: false,
+                status: _error.response?.status,
+                data: undefined
+            };
+        }
+    }
+
+    async function dispatchGetAuthenticatedUser(): Promise<APIResponse<User>> {
+        try {
+            const {status, data} = await API.auth.retrieveAuthenticatedUser(token.value!);
 
             return {
                 succeeded: true,
@@ -122,6 +146,7 @@ export const authStore = defineStore("authStore", () => {
         dispatchAuthenticate,
         dispatchVerifyToken,
         setIsAuthenticated,
+        dispatchGetAuthenticatedUser,
         isAuthenticated,
         userName,
         getRoles,

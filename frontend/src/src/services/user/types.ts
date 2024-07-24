@@ -1,5 +1,5 @@
 export type User = {
-    username: string,
+    userName: string,
     fullName: string,
     email: string,
     isActive: boolean
@@ -9,6 +9,6 @@ export type User = {
 
 export type ApplicationUser = {
     id: string,
-    username: string,
+    userName: string,
     fullName: string
 }
