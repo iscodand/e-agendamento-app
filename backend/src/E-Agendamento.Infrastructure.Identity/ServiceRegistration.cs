@@ -36,6 +36,7 @@ namespace E_Agendamento.Infrastructure.Identity
             #region Services
 
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<ITokenService, TokenService>();
 
             #endregion
 

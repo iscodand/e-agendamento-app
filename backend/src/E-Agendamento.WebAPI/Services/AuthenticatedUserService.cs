@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using E_Agendamento.Application.Contracts.Services;
+using E_Agendamento.Application.DTOs.Account;
 
 namespace E_Agendamento.WebAPI.Services
 {
