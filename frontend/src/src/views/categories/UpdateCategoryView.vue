@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { type Category, type InputUpdateCategory } from '@/services/categories/types';
 import { useCategoryStore } from '@/stores/categories';
-import { ref, watch } from 'vue';
-import TextInputComponent from '@/components/ui/input/TextInputComponent.vue';
+import { computed, ref, watch } from 'vue';
 import ErrorMessageComponent from '@/components/ui/error/ErrorMessageComponent.vue';
-import ActionButton from '@/components/ui/buttons/ActionButton.vue';
+
+//
+import Dialog from 'primevue/dialog';
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
 
 const props = defineProps<{ category: Category, show: boolean }>()
-const emit = defineEmits(['close', 'submit'])
+const emit = defineEmits(['close', 'submit', 'update:show']);
 
 const localCategory = ref<Category>({ ...props.category })
 const errorMessages = ref<string[]>([]);
@@ -20,6 +23,11 @@ watch(() => props.category, (newCategory) => {
     }
 });
 
+const showDialog = computed({
+    get: () => props.show,
+    set: (value) => emit('update:show', value),
+});
+
 function hideModalHandler() {
     emit('close');
 }
@@ -29,8 +37,6 @@ async function handleSubmit() {
         id: localCategory.value.id,
         description: localCategory.value.description
     };
-
-    console.log(input.id)
 
     const { succeeded, errors } = await categoryStore.dispatchUpdateCategory(input);
 
@@ -45,31 +51,25 @@ async function handleSubmit() {
 </script>
 
 <template>
-    <div>
-        <Teleport to="#modals">
-            <div v-if="show" class="">
-                <div class="fixed inset-0 bg-gray-900 opacity-40"></div>
-                <div class="fixed inset-0 flex items-center justify-center">
-                    <div class="bg-white text-black p-4 rounded shadow-lg max-w-md w-full">
-                        <h2 class="text-xl mb-4">Atualizar Categoria</h2>
-                        <form>
-                            <div class="mb-4">
-                                <label for="categoryDescription"
-                                    class="block text-sm font-medium text-gray-700">Descrição</label>
-                                <TextInputComponent v-model="localCategory.description"
-                                    placeholder="Descrição da Categoria" />
-                            </div>
+    <Dialog v-model:visible="showDialog" modal header="Atualizar Categoria" :style="{ width: '30rem' }">
+        <form @submit.prevent="handleSubmit">
+            <div class="flex flex-col gap-2 mb-4">
+                <label for="categoryDescription">
+                    Descrição
+                </label>
+                <InputText id="categoryDescription" v-model="localCategory.description"
+                    :invalid="localCategory.description.length < 5" />
+            </div>
 
-                            <ErrorMessageComponent :messages="errorMessages" />
+            <ErrorMessageComponent :messages="errorMessages" />
 
-                            <div class="flex justify-end gap-3">
-                                <ActionButton color="red" @click="hideModalHandler">Cancelar</ActionButton>
-                                <ActionButton color="green" @click="handleSubmit">Salvar</ActionButton>
-                            </div>
-                        </form>
-                    </div>
+            <div class="flex justify-end gap-3">
+                <div class="flex justify-end gap-3">
+                    <Button size="small" @click="hideModalHandler" label="Cancelar" severity="danger"
+                        icon="pi pi-times" />
+                    <Button size="small" label="Salvar" type="submit" severity="success" icon="pi pi-check" />
                 </div>
             </div>
-        </Teleport>
-    </div>
+        </form>
+    </Dialog>
 </template>

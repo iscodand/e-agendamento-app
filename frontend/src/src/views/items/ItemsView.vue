@@ -7,48 +7,51 @@ import MainComponent from '@/components/ui/layout/MainComponent.vue'
 import CreateItemView from './CreateItemView.vue';
 import UpdateItemView from './UpdateItemView.vue';
 import { TagIcon } from '@heroicons/vue/24/outline'
+import NotFoundAnimation from '@/assets/animations/not-found/NotFoundAnimation.vue'
 
 // PrimeVue
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Tag from 'primevue/tag'
 import Button from 'primevue/button'
+import Toast from 'primevue/toast'
+import { useToast } from 'primevue/usetoast'
 
+const toast = useToast();
 
-// Create item modal
+// show create item modal
 const showCreateItemModal = ref(false);
-
-const selectedItem = ref();
-
 function showCreateItemModalHandler() {
   showCreateItemModal.value = true;
 }
-
 function hideCreateItemModalHandler() {
   showCreateItemModal.value = false;
 }
 
-// Update item modal
+// show update item modal
 const showUpdateItemModal = ref(false);
-
+const selectedItem = ref();
 function showUpdateItemModalHandler(item: Item) {
   selectedItem.value = item;
   showUpdateItemModal.value = true;
 }
-
 function closeUpdateItemModalHandler() {
   showUpdateItemModal.value = false;
 }
 
+// delete item
 async function handleDeleteItem(itemId: string) {
-  await itemsStore.dispatchDeleteItem(itemId);
+  const { succeeded } = await itemsStore.dispatchDeleteItem(itemId);
+
+  if (succeeded) {
+    toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Item deletado com sucesso.', life: 3000 });
+  } else {
+    toast.add({ severity: 'error', summary: 'Erro', detail: 'Ops. Erro ao deletar item', life: 3000 });
+  }
 }
 
 const itemsStore = useItemStore()
 const items: any = ref([])
-
-const categoryStore = useCategoryStore()
-const categories: any = ref([])
 
 onMounted(async () => {
   const { succeeded, data, status } = await itemsStore.dispatchGetItems();
@@ -59,6 +62,9 @@ onMounted(async () => {
     console.log('Failed to get items from API. Status:', status)
   }
 })
+
+const categoryStore = useCategoryStore()
+const categories: any = ref([])
 
 onMounted(async () => {
   const { succeeded, data, status } = await categoryStore.dispatchGetCategories();
@@ -85,7 +91,7 @@ onMounted(async () => {
           <div class="mb-4">
             <div class="flex items-center justify-end h-24 rounded">
               <Button @click="showCreateItemModalHandler">
-                Adicionar Item
+                Adicionar novo Item
               </Button>
             </div>
           </div>
@@ -94,6 +100,11 @@ onMounted(async () => {
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
           <DataTable :value="items" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"
             tableStyle="min-width: 50rem">
+
+            <template #empty>
+              <NotFoundAnimation text="Você não possui itens cadastrados." />
+            </template>
+
             <Column field="name" header="Nome" style="width: 22%"></Column>
             <Column field="description" header="Descrição" style="width: 22%" class="truncate"></Column>
             <Column field="quantityAvailable" header="Qtd. Disponível" style="width: 22%"></Column>
@@ -109,10 +120,13 @@ onMounted(async () => {
             </Column>
             <Column>
               <template #body="{ data }">
-                <ButtonGroup class="flex gap-4">
+                <div class="flex gap-4">
                   <Button @click="showUpdateItemModalHandler(data)" size="small" label="Editar" severity="info"
                     icon="pi pi-pencil" />
-                </ButtonGroup>
+                  <Toast />
+                  <Button @click="handleDeleteItem(data.id)" size="small" label="Excluir" severity="danger"
+                    icon="pi pi-trash" />
+                </div>
               </template>
             </Column>
           </DataTable>

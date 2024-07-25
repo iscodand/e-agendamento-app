@@ -1,23 +1,43 @@
 <script lang="ts" setup>
-import { defineEmits, ref, onMounted, watch } from 'vue';
+import { defineEmits, ref, onMounted, watch, computed } from 'vue';
 import { useItemStore } from '@/stores/items'
 import type { InputCreateItem } from '@/services/items/types';
-import TextInputComponent from "@/components/ui/input/TextInputComponent.vue";
-import NumberInputComponent from "@/components/ui/input/NumberInputComponent.vue";
-import ActionButton from '@/components/ui/buttons/ActionButton.vue';
 import ErrorMessageComponent from '@/components/ui/error/ErrorMessageComponent.vue';
 
-defineProps<{ show: boolean, categories: any }>();
+//
+import AutoComplete from 'primevue/autocomplete';
+import type { Category } from '@/services/categories/types';
+import InputText from 'primevue/inputtext';
+import InputNumber from 'primevue/inputnumber';
+import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
+
+const props = defineProps<{ show: boolean, categories: Category[] }>();
 
 const itemStore = useItemStore();
-const emit = defineEmits(['close', 'submit']);
+
+const emit = defineEmits(['close', 'submit', 'create:show']);
+
+const showDialog = computed({
+    get: () => props.show,
+    set: (value) => emit('create:show', value),
+});
 
 const errorMessages = ref<string[]>([]);
 
-let request = ref({
+// temporario => preciso definir isso na request (CreateItemInput)
+interface Request {
+    name: string;
+    description: string;
+    category: Category | undefined;
+    totalQuantity: number;
+    quantityAvailable: number;
+}
+
+let request = ref<Request>({
     name: '',
     description: '',
-    categoryId: '',
+    category: undefined,
     totalQuantity: 0,
     quantityAvailable: 0,
 })
@@ -26,7 +46,7 @@ function hideModalHandler() {
     request = ref({
         name: '',
         description: '',
-        categoryId: '',
+        category: undefined,
         totalQuantity: 0,
         quantityAvailable: 0,
     })
@@ -56,7 +76,7 @@ async function handleSubmit() {
     const input: InputCreateItem = {
         name: request.value.name,
         description: request.value.description,
-        categoryId: request.value.categoryId,
+        categoryId: request.value.category!.id,
         totalQuantity: request.value.totalQuantity,
         quantityAvailable: request.value.quantityAvailable,
     };
@@ -70,60 +90,65 @@ async function handleSubmit() {
         errorMessages.value.push(response.errors![0]);
     }
 }
+
+const filteredCategories = ref<Category[]>([]);
+
+const searchCategory = (event: { query: string }) => {
+    const query = event.query.toLowerCase();
+
+    filteredCategories.value = props.categories.filter((category: Category) =>
+        category.description.toLowerCase().includes(query)
+    );
+};
 </script>
 
 <template>
-    <Teleport to="#modals">
-        <div v-if="show" class="">
-            <div class="fixed inset-0 bg-gray-900 opacity-40"></div>
-            <div class="fixed inset-0 flex items-center justify-center">
-                <div class="bg-white text-black p-4 rounded shadow-lg max-w-md w-full">
-                    <h2 class="text-xl mb-4">Criar Novo Item</h2>
-                    <form @submit.prevent="handleSubmit">
-                        <div class="mb-4">
-                            <label for="itemName" class="block text-sm font-medium text-gray-700">Nome do Item</label>
-                            <TextInputComponent required v-model="request.name" placeholder="Nome do Item" />
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="itemDescription" class="block text-sm font-medium text-gray-700">Descrição do
-                                Item</label>
-                            <TextInputComponent v-model="request.description" placeholder="Descrição do Item" />
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="categories"
-                                class="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
-                            <select for=" categories"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                                v-model="request.categoryId">
-                                <option v-for="category in categories" :value="category.id">
-                                    {{ category.description }}
-                                </option>
-                            </select>
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="quantityAvailable" class="block text-sm font-medium text-gray-700">Quantidade
-                                Disponível</label>
-                            <NumberInputComponent required v-model="request.quantityAvailable" />
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="totalQuantity" class="block text-sm font-medium text-gray-700">Quantidade
-                                Total</label>
-                            <NumberInputComponent required v-model="request.totalQuantity" />
-                        </div>
-
-                        <ErrorMessageComponent :messages="errorMessages" />
-
-                        <div class="flex gap-52">
-                            <ActionButton color="red" @click="hideModalHandler">Cancelar</ActionButton>
-                            <ActionButton class="justify-end" type="submit" color="green">Cadastrar</ActionButton>
-                        </div>
-                    </form>
-                </div>
+    <Dialog v-model:visible="showDialog" modal header="Criar novo item" :style="{ width: '30rem' }">
+        <form @submit.prevent="handleSubmit">
+            <div class="flex flex-col gap-2 mb-4">
+                <label for="itemName">
+                    Nome do Item
+                </label>
+                <InputText id="itemName" v-model="request.name" :invalid="request.name.length < 5" />
             </div>
-        </div>
-    </Teleport>
+
+            <div class="flex flex-col gap-2 mb-4">
+                <label for="itemDescription">
+                    Descrição do Item
+                </label>
+                <InputText id="itemDescription" v-model="request.description" />
+            </div>
+
+            <div class="flex flex-col gap-2 mb-4">
+                <label for="category" class="block text-sm font-medium text-gray-700">
+                    Categoria
+                </label>
+                <AutoComplete v-model="request.category" dropdown :suggestions="filteredCategories"
+                    @complete="searchCategory" optionLabel="description" :invalid="request.category === null" />
+            </div>
+
+            <div class="flex flex-col gap-2 mb-4">
+                <label for="quantityAvailable" class="block text-sm font-medium text-gray-700">
+                    Quantidade Disponível
+                </label>
+                <InputNumber v-model="request.quantityAvailable" :invalid="request.quantityAvailable === 0"
+                    inputId="withoutgrouping" :useGrouping="false" fluid />
+            </div>
+
+            <div class="flex flex-col gap-2 mb-4">
+                <label for="totalQuantity" class="block text-sm font-medium text-gray-700">
+                    Quantidade Total
+                </label>
+                <InputNumber v-model="request.totalQuantity" :invalid="request.totalQuantity === 0"
+                    inputId="withoutgrouping" :useGrouping="false" fluid />
+            </div>
+
+            <ErrorMessageComponent :messages="errorMessages" />
+
+            <div class="flex justify-end gap-3">
+                <Button size="small" @click="hideModalHandler" label="Cancelar" severity="danger" icon="pi pi-times" />
+                <Button size="small" label="Salvar" type="submit" severity="success" icon="pi pi-check" />
+            </div>
+        </form>
+    </Dialog>
 </template>

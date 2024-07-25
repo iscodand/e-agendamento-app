@@ -4,6 +4,7 @@ import CreateCompanyView from './CreateCompanyView.vue';
 import { useCompanyStore } from '@/stores/companies';
 import { BuildingOffice2Icon } from "@heroicons/vue/24/outline";
 import { onMounted, ref, type Ref } from 'vue';
+import NotFoundAnimation from '@/assets/animations/not-found/NotFoundAnimation.vue';
 
 //
 import DataTable from 'primevue/datatable'
@@ -11,6 +12,7 @@ import Column from 'primevue/column'
 import Tag from 'primevue/tag'
 import Button from 'primevue/button'
 import Paginator from 'primevue/paginator';
+import router from '@/router';
 
 const companyStore = useCompanyStore();
 const companies: any = ref([]);
@@ -52,6 +54,10 @@ onMounted(async () => {
     await fetchCompanies();
 })
 
+function goToCompanyDetails(companyId: string): void {
+    router.push({ name: 'company-details', params: { id: companyId } });
+}
+
 </script>
 
 <template>
@@ -78,10 +84,15 @@ onMounted(async () => {
                 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
 
                     <DataTable :value="companies" tableStyle="min-width: 50rem">
-                        <Column field="name" header="Nome" style="width: 25%"></Column>
-                        <Column field="description" header="Descrição" style="width: 25%"></Column>
-                        <Column field="cnpj" header="CNPJ" style="width: 25%"></Column>
-                        <Column field="isAvailable" header="Situação" style="width: 25%">
+
+                        <template #empty>
+                            <NotFoundAnimation text="Não há empresas cadastradas." />
+                        </template>
+
+                        <Column field="name" header="Nome" style="width: 21%"></Column>
+                        <Column field="description" header="Descrição" style="width: 21%"></Column>
+                        <Column field="cnpj" header="CNPJ" style="width: 21%"></Column>
+                        <Column field="isAvailable" header="Situação" style="width: 21%">
                             <template #body="{ data }">
                                 <div v-if="data.isActive">
                                     <Tag value="Ativa" severity="success" />
@@ -91,13 +102,12 @@ onMounted(async () => {
                                 </div>
                             </template>
                         </Column>
-                        <!-- <Column>
+                        <Column>
                             <template #body="{ data }">
-                                <ButtonGroup class="flex gap-4">
-                                    <Button size="small" label="Editar" severity="info" icon="pi pi-pencil" />
-                                </ButtonGroup>
+                                <Button @click="goToCompanyDetails(data.id)" size="small" label="Detalhes"
+                                    severity="info" icon="pi pi-info-circle" />
                             </template>
-                        </Column> -->
+                        </Column>
                     </DataTable>
                     <Paginator :rows="parameters.pageSize" :totalRecords="totalCompanies" @page="onPageChange" />
 

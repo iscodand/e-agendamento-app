@@ -23,6 +23,5 @@ onMounted(async () => {
 <template>
   <div>
     <NavComponent v-if="!isLoading" :user="user!" />
-    <div v-else>Loading...</div>
   </div>
 </template>

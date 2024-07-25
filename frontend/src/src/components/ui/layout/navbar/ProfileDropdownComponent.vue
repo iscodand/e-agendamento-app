@@ -6,6 +6,11 @@ import type { MenuItem } from 'primevue/menuitem';
 import Menubar from 'primevue/menubar';
 import { PrimeIcons } from '@primevue/core/api'
 
+import Toast from 'primevue/toast';
+import { useToast } from 'primevue/usetoast';
+
+const toast = useToast();
+
 const useAuth = authStore();
 
 const props = defineProps<{ user: User }>();
@@ -13,12 +18,13 @@ const props = defineProps<{ user: User }>();
 async function handleLogout() {
     useAuth.clear();
     router.push('login/');
+    toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Logout realizado com sucesso.', life: 3000 });
 }
 
 const items: MenuItem[] = [
     {
         label: `Olá, ${props.user.fullName.split(" ")[0]}!`,
-        // icon: PrimeIcons.USER,
+        icon: "@;",
         items: [
             {
                 label: "Meu Perfil",
@@ -30,7 +36,8 @@ const items: MenuItem[] = [
             },
             {
                 label: "Logout",
-                icon: PrimeIcons.SIGN_OUT
+                icon: PrimeIcons.SIGN_OUT,
+                command: handleLogout
             }
         ]
     }
@@ -39,7 +46,7 @@ const items: MenuItem[] = [
 </script>
 
 <template>
-    <Menubar class="h-20">
+    <Menubar class="h-20 border">
         <template #start>
             <a class="flex ms-2 md:me-24">
                 <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 me-3" alt="FlowBite Logo" />
@@ -48,10 +55,12 @@ const items: MenuItem[] = [
             </a>
         </template>
         <template #end>
-            <Menubar :model="items">
+            <Toast />
+            <Menubar :model="items" class="teste">
             </Menubar>
         </template>
     </Menubar>
+
 </template>
 
 <style scoped></style>

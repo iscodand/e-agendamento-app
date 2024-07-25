@@ -2,10 +2,20 @@
 import { ref } from 'vue';
 import { authStore } from '@/stores/auth'
 import { type Login } from '@/services/auth/types'
-import ActionButton from '@/components/ui/buttons/ActionButton.vue'
-import TextInputComponent from '@/components/ui/input/TextInputComponent.vue'
 import ErrorMessageComponent from '@/components/ui/error/ErrorMessageComponent.vue'
 import router from '@/router';
+
+//
+import Password from 'primevue/password';
+import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
+import Toast from 'primevue/toast';
+import { useToast } from 'primevue/usetoast';
+
+const toast = useToast()
+
+toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Logout realizado com sucesso.', life: 3000 });
+
 
 const useAuthStore = authStore();
 
@@ -17,6 +27,8 @@ const credentials = ref({
 const errorMessages = ref<string[]>([]);
 
 async function handleSubmit() {
+  errorMessages.value = [];
+
   const input: Login = {
     username: credentials.value.username,
     password: credentials.value.password
@@ -25,10 +37,8 @@ async function handleSubmit() {
   const response = await useAuthStore.dispatchAuthenticate(input);
 
   if (response.succeeded) {
-    router.replace('items/');
-    router.push('items/')
+    router.push({ name: "home" })
   } else {
-    errorMessages.value = [];
     errorMessages.value.push('Nome de usuário ou senha incorretos.')
   }
 }
@@ -36,32 +46,26 @@ async function handleSubmit() {
 
 <template>
   <div>
+    <Toast />
     <section class="h-screen flex justify-center items-center">
       <form class="flex flex-col gap-4 card p-16 bg-white rounded-3xl" @submit.prevent="handleSubmit">
-        <div class="mb-4">
-          <span class="flex ms-2">
-            <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 me-3" alt="FlowBite Logo" />
-            <span
-              class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap text-gray-800">E-Agendamento</span>
-          </span>
+        <span class="flex mb-4 self-center text-xl font-semibold sm:text-2xl whitespace-nowrap text-gray-800">
+          <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 me-3" alt="FlowBite Logo" />
+          E-Agendamento
+        </span>
+
+        <div class="flex flex-col gap-2 mb-2">
+          <label for="password" class="block text-sm font-medium text-gray-700">
+            Usuário
+          </label>
+          <InputText v-model="credentials.username" required />
         </div>
 
-        <div>
-          <label>
-            <span class="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-slate-700">
-              Username
-            </span>
-            <TextInputComponent required placeholder="Nome de Usuário" v-model="credentials.username" />
+        <div class="flex flex-col gap-2">
+          <label for="password" class="block text-sm font-medium text-gray-700">
+            Senha
           </label>
-        </div>
-
-        <div>
-          <label>
-            <span class="after:content-['*'] after:ml-0.5 after:text-red-500 block text-sm font-medium text-slate-700">
-              Senha
-            </span>
-            <TextInputComponent required type="password" placeholder="Senha" v-model="credentials.password" />
-          </label>
+          <Password v-model="credentials.password" toggleMask :feedback="false" />
         </div>
 
         <ErrorMessageComponent :messages="errorMessages" />
@@ -69,7 +73,7 @@ async function handleSubmit() {
         <a href="/teste" class="text-sm text-end text-gray-800 hover:text-gray-700">Esqueceu sua senha?</a>
 
         <div class="text-center">
-          <ActionButton type="submit" color="blue">Login</ActionButton>
+          <Button type="submit" label="Entrar" icon="pi pi-sign-in" />
         </div>
       </form>
     </section>

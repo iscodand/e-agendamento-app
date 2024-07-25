@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import type { User } from '@/services/user/types';
-import { authStore } from '@/stores/auth';
 import { UsersIcon, TagIcon, BuildingOffice2Icon, ClockIcon, SwatchIcon, HomeIcon } from "@heroicons/vue/24/outline";
 import ItemListComponent from '@/components/ui/layout/navbar/ItemListComponent.vue';
-import router from '@/router';
 import ProfileDropdownComponent from './navbar/ProfileDropdownComponent.vue';
-
-const useAuth = authStore();
 
 const props = defineProps<{ user: User }>();
 
@@ -16,7 +12,7 @@ const isAdmin: Boolean = props.user.roles.includes('Admin');
 
 <template>
   <div>
-    <ProfileDropdownComponent :user="user" />
+    <ProfileDropdownComponent :user="user" class="relative border border-red-600" />
 
     <aside id="logo-sidebar"
       class="fixed left-0 z-40 w-64 h-screen pt-10 transition-transform -translate-x-full border-r border-gray-200 sm:translate-x-0 bg-gray-800 border-gray-700"
