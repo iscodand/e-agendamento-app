@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import routes from './routes';
 
 const router = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
             path: '/login',
@@ -10,9 +9,20 @@ const router = createRouter({
             component: () => import('../views/account/LoginView.vue')
         },
         {
+            path: '/home',
+            name: 'home',
+            component: () => import('../views/home/HomeView.vue'),
+            meta: {
+                auth: true
+            }
+        },
+        {
             path: '/meus-agendamentos',
             name: 'my-schedules',
-            component: () => import('../views/schedules/MySchedulesView.vue')
+            component: () => import('../views/schedules/MySchedulesView.vue'),
+            meta: {
+                auth: true
+            }
         },
         {
             path: '/items',
@@ -45,8 +55,17 @@ const router = createRouter({
             meta: {
                 auth: true
             }
+        },
+        {
+            path: '/empresas/:id',
+            name: 'company-details',
+            component: () => import('@/views/companies/DetailCompanyView.vue'),
+            meta: {
+                auth: true
+            }
         }
-    ]
+    ],
+    history: createWebHistory(import.meta.env.BASE_URL)
 })
 
 router.beforeEach(routes);
