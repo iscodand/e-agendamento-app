@@ -102,7 +102,8 @@ onMounted(async () => {
             tableStyle="min-width: 50rem">
 
             <template #empty>
-              <NotFoundAnimation text="Você não possui itens cadastrados." />
+              <NotFoundAnimation text="Você não possui itens cadastrados." buttonLabel="Clique aqui para adicionar"
+                :action=showCreateItemModalHandler />
             </template>
 
             <Column field="name" header="Nome" style="width: 22%"></Column>
