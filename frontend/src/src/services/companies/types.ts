@@ -1,13 +1,13 @@
 export type Company = {
-    id: String,
-    name: String,
-    cnpj: String,
-    description: String,
+    id: string,
+    name: string,
+    cnpj: string,
+    description: string,
     isActive: boolean
 }
 
 export type InputCreateCompany = {
-    name: String,
-    cnpj: String,
-    description: String
+    name: string,
+    cnpj: string,
+    description: string
 }
