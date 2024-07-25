@@ -11,6 +11,14 @@ async function getCompanies(token: string, pageSize: number, pageNumber: number)
     })
 }
 
+async function getCompanyById(companyId: string, token: string) {
+    return await http.get<APIResponse<Company>>(`companies/${companyId}`, {
+        headers: {
+            Authorization: 'Bearer ' + token
+        }
+    })
+}
+
 async function createCompany(input: InputCreateCompany, token: string) {
     return await http.post<APIResponse<Company>>('companies', input, {
         headers: {
@@ -29,6 +37,7 @@ async function getEmployeesByCompany(companyId: string, token: string) {
 
 export default {
     getCompanies,
+    getCompanyById,
     getEmployeesByCompany,
     createCompany
 }

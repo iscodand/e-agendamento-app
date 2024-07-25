@@ -52,6 +52,36 @@ export const useCompanyStore = defineStore("companyStore", () => {
         };
     }
     
+    async function dispatchGetCompanyById(companyId: string): Promise<APIResponse<Company>> {
+        try {
+            const { status, data } = await API.companies.getCompanyById(companyId, localStorage.getItem('token') || '');
+            if (status === 200 && data.data) {
+                return {
+                    succeeded: true,
+                    data: data.data,
+                    status: status,
+                    totalItems: data.totalItems
+                };
+            }
+
+        // TODO => arrumar essa mensagem de erro (not found???)
+        } catch (error) {
+            const _error = error as AxiosError<string>;
+            
+            return {
+                succeeded: false,
+                status: _error.response?.status,
+                data: undefined
+            };
+        }
+
+        return {
+            succeeded: false,
+            status: 400,
+            data: undefined
+        };
+    }
+    
     async function dispatchCreateCompany(input: InputCreateCompany): Promise<APIResponse<Company>> {
         try {
             const {status, data} = await API.companies.createCompany(input, localStorage.getItem('token') || '');
@@ -115,6 +145,7 @@ export const useCompanyStore = defineStore("companyStore", () => {
 
     return {
         dispatchGetCompanies,
+        dispatchGetCompanyById,
         dispatchCreateCompany,
         dispatchGetEmployeesByCompany
     }
