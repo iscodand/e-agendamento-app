@@ -1,6 +1,7 @@
 using E_Agendamento.Application.Features.Companies.Commands.AddUserToCompany;
 using E_Agendamento.Application.Features.Companies.Commands.CreateCompany;
 using E_Agendamento.Application.Features.Companies.Queries.GetAllCompanies;
+using E_Agendamento.Application.Features.Companies.Queries.GetCompanyById;
 using E_Agendamento.Application.Features.Employees.Queries.GetEmployeesByCompany;
 using E_Agendamento.Domain.Enums;
 using E_Agendamento.WebAPI.Controllers.Common;
@@ -22,6 +23,13 @@ namespace E_Agendamento.WebAPI.Controllers.v1
                 PageSize = filter.PageSize
             };
 
+            return Ok(await Mediator.Send(query));
+        }
+
+        [HttpGet("{companyId}/")]
+        public async Task<IActionResult> Get(string companyId)
+        {
+            GetCompanyByIdQuery query = new() { Id = companyId };
             return Ok(await Mediator.Send(query));
         }
 
