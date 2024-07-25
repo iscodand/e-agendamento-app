@@ -16,13 +16,13 @@ namespace E_Agendamento.Infrastructure.Identity.Seeds
                 UserName = "iscodandrade",
                 Email = "iscodand@outlook.com",
                 Roles = [nameof(Roles.SuperAdmin)],
-                Password = "P@$$w0rd",
-                ConfirmPassword = "P@$$w0rd"
+                Password = "12345678",
+                ConfirmPassword = "12345678"
             };
 
             RegisterRequest basic = new()
             {
-                FullName = "José Carlos",
+                FullName = "Jose Carlos",
                 UserName = "jose",
                 Email = "jose@email.com",
                 Roles = [nameof(Roles.Basic)],
@@ -30,14 +30,21 @@ namespace E_Agendamento.Infrastructure.Identity.Seeds
                 ConfirmPassword = "12345678"
             };
 
-            bool basicUserAlreadyRegistered = await userManager.Users.AnyAsync(x => x.UserName == basic.UserName, cancellationToken);
-            if (basicUserAlreadyRegistered == false)
+            bool usersAlreadyRegistered = await userManager.Users.AsNoTracking()
+                .AnyAsync(x => x.UserName.Contains(basic.UserName) &&
+                               x.UserName.Contains(superAdmin.UserName)
+                               , cancellationToken)
+                .ConfigureAwait(false);
+            if (usersAlreadyRegistered == false)
             {
                 ApplicationUser newSuperAdmin = RegisterRequest.Map(superAdmin);
                 ApplicationUser newBasicUser = RegisterRequest.Map(basic);
 
                 await userManager.CreateAsync(newSuperAdmin, superAdmin.Password);
                 await userManager.CreateAsync(newBasicUser, basic.Password);
+
+                await userManager.AddToRolesAsync(newSuperAdmin, superAdmin.Roles);
+                await userManager.AddToRolesAsync(newBasicUser, basic.Roles);
             }
         }
     }

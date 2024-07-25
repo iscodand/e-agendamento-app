@@ -1,12 +1,14 @@
 export type User = {
-    username: string,
+    userName: string,
+    fullName: string,
     email: string,
+    isActive: boolean
     roles: string[],
     company: string
 }
 
 export type ApplicationUser = {
     id: string,
-    username: string,
+    userName: string,
     fullName: string
 }

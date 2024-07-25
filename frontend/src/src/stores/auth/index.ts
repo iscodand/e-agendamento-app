@@ -2,6 +2,7 @@ import router from "@/router";
 import { API } from "@/services";
 import type { Login, LoginResponse, VerifyToken } from "@/services/auth/types";
 import type { APIResponse } from "@/services/types";
+import type { User } from "@/services/user/types";
 import type { AxiosError } from "axios";
 import { defineStore } from "pinia";
 import { computed, ref, type Ref } from "vue";
@@ -9,8 +10,8 @@ import { computed, ref, type Ref } from "vue";
 export const authStore = defineStore("authStore", () => {
     const token = ref(localStorage.getItem('token'));
     const storedUser = localStorage.getItem('user');
-    const company = localStorage.getItem('company');
     const user = ref(storedUser ? JSON.parse(storedUser) : {});
+    const roles = ref<string[]>();
 
     const isAuth: Ref<boolean> = ref(false);
 
@@ -21,7 +22,9 @@ export const authStore = defineStore("authStore", () => {
             if (status === 200) {
                 setToken(data.data!.accessToken)
                 setUser(data.data!.userName)
-                setCompany(data.data!.companies[0])
+                setRoles(data.data!.roles)
+
+                console.log(roles)
             }
 
             return {
@@ -63,6 +66,30 @@ export const authStore = defineStore("authStore", () => {
         }
     }
 
+    async function dispatchGetAuthenticatedUser(): Promise<APIResponse<User>> {
+        try {
+            const {status, data} = await API.auth.retrieveAuthenticatedUser(token.value!);
+
+            return {
+                succeeded: true,
+                data: data.data,
+                status: status
+            }
+        } catch (error) {
+            const _error = error as AxiosError<string>;
+
+            clear();
+            router.push('/login')
+            console.log('error', _error.response?.data)
+
+            return {
+                succeeded: false,
+                status: _error.response?.status,
+                data: undefined
+            };
+        }
+    }
+
     function setIsAuthenticated() {
         isAuth.value = true;
     }
@@ -77,13 +104,18 @@ export const authStore = defineStore("authStore", () => {
         user.value = userValue;
     }
 
-    function setCompany(companyId: string): void {
-        localStorage.setItem('company', JSON.stringify(companyId));
+    function setRoles(newRoles: string[]) : void {
+        roles.value = newRoles;
     }
 
     const isAuthenticated = computed(async () => {
         return (await dispatchVerifyToken()).succeeded;
     })
+
+    function refresh() {
+        const test = ['SuperAdmin']
+        setRoles(test)
+    }
 
     const userName = computed(() => {
         if (user.value) {
@@ -92,8 +124,11 @@ export const authStore = defineStore("authStore", () => {
         return '';
     })
 
-    const getCompany = computed(() => {
-
+    const getRoles = computed(() => {
+        if (roles.value) {
+            return roles.value
+        }
+        return [];
     })
 
     function clear() {
@@ -111,8 +146,11 @@ export const authStore = defineStore("authStore", () => {
         dispatchAuthenticate,
         dispatchVerifyToken,
         setIsAuthenticated,
+        dispatchGetAuthenticatedUser,
         isAuthenticated,
         userName,
+        getRoles,
+        refresh,
         clear,
         setToken,
         setUser

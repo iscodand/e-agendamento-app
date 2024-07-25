@@ -5,43 +5,61 @@ import { onMounted, ref, type Ref } from 'vue';
 import CreateCategoryView from './CreateCategoryView.vue';
 import UpdateCategoryView from './UpdateCategoryView.vue';
 import type { Category } from '@/services/categories/types';
+import { SwatchIcon } from '@heroicons/vue/24/outline';
+import NotFoundAnimation from '@/assets/animations/not-found/NotFoundAnimation.vue';
+
+//
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Button from 'primevue/button';
+import Toast from 'primevue/toast';
+
+import { useToast } from 'primevue/usetoast';
+
+const toast = useToast();
 
 const categoryStore = useCategoryStore()
-const categories: any = ref([])
+const categories = ref<Category[]>([])
 
-const selectedCategory = ref();
+// show create category dialog handler
+const createCategoryDialog = ref<boolean>(false);
 
-const showCreateCategoryModal = ref(false);
-const showUpdateCategoryModal = ref(false);
-
-function showCreateCategoryModalHandler() {
-    showCreateCategoryModal.value = true;
+function showCreateCategoryDialogHandler() {
+    createCategoryDialog.value = true;
+}
+function hideCreateCategoryDialogHandler() {
+    createCategoryDialog.value = false;
 }
 
-function hideCreateCategoryModalHandler() {
-    showCreateCategoryModal.value = false;
-}
+// show update category dialog handler
+const selectedCategory = ref<Category>();
+const updateCategoryDialog = ref<boolean>(false);
 
-function showUpdateCategoryModalHandler(category: Category) {
+function showUpdateCategoryDialogHandler(category: Category) {
+    updateCategoryDialog.value = true;
     selectedCategory.value = category;
-    showUpdateCategoryModal.value = true;
 }
-
-function hideUpdateCategoryModalHandler() {
-    showUpdateCategoryModal.value = false;
+function hideUpdateCategoryDialogHandler() {
+    updateCategoryDialog.value = false;
 }
 
 async function handleDeleteCategory(categoryId: string): Promise<void> {
-    await categoryStore.dispatchDeleteCategory(categoryId);
+    const { succeeded } = await categoryStore.dispatchDeleteCategory(categoryId);
+
+    if (succeeded) {
+        toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Deletado com sucesso', life: 3000 });
+    } else {
+        toast.add({ severity: 'error', summary: 'Erro', detail: 'Você não pode deletar categorias com itens vinculados.', life: 3000 });
+    }
 }
 
 onMounted(async () => {
-    const { succeeded, data, status } = await categoryStore.dispatchGetCategories();
+    const { succeeded, data } = await categoryStore.dispatchGetCategories();
 
     if (succeeded) {
-        categories.value = data;
+        categories.value = data!;
     } else {
-        console.log('Failed to get categories from API. Status:', status)
+        console.log('Failed to get categories from API.')
     }
 })
 
@@ -51,61 +69,51 @@ onMounted(async () => {
     <div>
         <MainComponent />
         <div class="p-4 sm:ml-64">
-            <div class="p-5 mt-14">
+            <div class="p-5">
                 <div class="grid grid-cols-2 gap-4">
                     <div class="flex items-center h-24 rounded">
-                        <svg class="flex-shrink-0 w-7 h-7 dark:text-gray-800 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-                            viewBox="0 0 384 512">
-                            <path
-                                d="M40 48C26.7 48 16 58.7 16 72v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V72c0-13.3-10.7-24-24-24H40zM192 64c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zM16 232v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V232c0-13.3-10.7-24-24-24H40c-13.3 0-24 10.7-24 24zM40 368c-13.3 0-24 10.7-24 24v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V392c0-13.3-10.7-24-24-24H40z" />
-                        </svg>
-                        <p class="text-3xl font-bold text-gray-400 dark:text-gray-800 ml-4">Categorias</p>
+                        <SwatchIcon
+                            class="flex-shrink-0 w-7 h-7 text-gray-800 transition duration-75  group-hover:text-gray-900" />
+                        <p class="text-3xl font-bold text-gray-800 ml-4">Categorias</p>
                     </div>
 
-                    <div class="flex items-center justify-end h-24 rounded">
-                        <button
-                            class="text-white dark:bg-green-800 dark:hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-                            @click="showCreateCategoryModalHandler">
-                            Adicionar Categoria
-                        </button>
+                    <div class="mb-4">
+                        <div class="flex items-center justify-end h-24 rounded">
+                            <Button @click="showCreateCategoryDialogHandler">
+                                Adicionar nova Categoria
+                            </Button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                        <tr>
-                            <th scope="col" class="px-8 py-3">Descrição</th>
-                            <th scope="col" class="py-3">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class=" bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-                            v-for="(category, index) in categories" :key="index">
-                            <td class="px-8 py-4">{{ category.description }}</td>
-                            <td class="py-4">
-                                <!-- Modal toggle -->
-                                <a @click="showUpdateCategoryModalHandler(category)" type="button"
-                                    class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4
-                                                        focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2
-                                                        dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                    Editar
-                                </a>
-                                <button type="button" @click="handleDeleteCategory(category.id)"
-                                    class="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
-                                    Deletar
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                    <DataTable :value="categories" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"
+                        tableStyle="min-width: 50rem">
+
+                        <template #empty>
+                            <NotFoundAnimation text="Você não possui categorias cadastradas." />
+                        </template>
+
+                        <Column field="description" header="Descrição" style="width: 50%" class="truncate"></Column>
+                        <Column>
+                            <template #body="{ data }">
+                                <div class="flex gap-3">
+                                    <Button @click="showUpdateCategoryDialogHandler(data)" size="small" label="Editar"
+                                        severity="info" icon="pi pi-pencil" />
+
+                                    <Toast />
+                                    <Button @click="handleDeleteCategory(data.id)" size="small" label="Deletar"
+                                        severity="danger" icon="pi pi-trash" />
+                                </div>
+                            </template>
+                        </Column>
+                    </DataTable>
+                </div>
             </div>
         </div>
     </div>
 
-    <CreateCategoryView :show="showCreateCategoryModal" @close="hideCreateCategoryModalHandler" />
-    <UpdateCategoryView :category="selectedCategory" :show="showUpdateCategoryModal"
-        @close="hideUpdateCategoryModalHandler" />
+    <CreateCategoryView :show="createCategoryDialog" @close="hideCreateCategoryDialogHandler" />
+    <UpdateCategoryView :category="selectedCategory!" :show="updateCategoryDialog"
+        @close="hideUpdateCategoryDialogHandler" />
 </template>

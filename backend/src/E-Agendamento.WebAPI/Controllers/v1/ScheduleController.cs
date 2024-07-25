@@ -1,4 +1,5 @@
 using E_Agendamento.Application.Features.Schedules.Commands.CreateSchedule;
+using E_Agendamento.Application.Features.Schedules.Queries.GetSchedulesByUser;
 using E_Agendamento.WebAPI.Controllers.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,10 +10,15 @@ namespace E_Agendamento.WebAPI.Controllers.v1
     [Route("api/v1/schedules")]
     public class ScheduleController : BaseController
     {
-        [HttpGet]
+        [HttpGet("me/")]
         public async Task<IActionResult> Get()
         {
-            return Ok();
+            GetSchedulesByUserQuery command = new()
+            {
+                RequestedBy = AuthenticatedUser.UserId
+            };
+
+            return Ok(await Mediator.Send(command));
         }
 
         [HttpPost]

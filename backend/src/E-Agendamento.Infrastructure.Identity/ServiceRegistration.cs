@@ -36,6 +36,7 @@ namespace E_Agendamento.Infrastructure.Identity
             #region Services
 
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<ITokenService, TokenService>();
 
             #endregion
 
@@ -67,7 +68,8 @@ namespace E_Agendamento.Infrastructure.Identity
                             c.NoResult();
                             c.Response.StatusCode = 500;
                             c.Response.ContentType = "text/plain";
-                            return c.Response.WriteAsync(c.Exception.ToString());
+                            var result = JsonConvert.SerializeObject(new Response<string>(c.Exception.ToString()));
+                            return c.Response.WriteAsync(result);
                         },
                         OnChallenge = context =>
                         {
