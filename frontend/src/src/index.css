@@ -2,4 +2,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import 'primeicons/primeicons.css'
+
+.p-menubar-submenu {
+    right: 0 !important;
+    margin-right: 0.75rem !important;
+    margin-top: 0.5rem !important;
+}

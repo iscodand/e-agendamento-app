@@ -11,6 +11,10 @@ import VueTheMask from 'vue-the-mask'
 
 import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';
+import ToastService from 'primevue/toastservice';
+
+import Vue3Lottie from "vue3-lottie";
+// import "vue3-lottie/dist/style.css";
 
 const app = createApp(App)
 
@@ -20,7 +24,9 @@ app.use(PrimeVue, {
     }
 });
 
+app.use(ToastService);
 app.use(createPinia())
+app.use(Vue3Lottie);
 app.use(router)
 app.use(VueTheMask)
 
