@@ -10,7 +10,7 @@ import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 
 const props = defineProps<{ show: boolean }>();
-const errorMessages = ref([]);
+const errorMessages = ref<string[]>([]);
 
 const companyStore = useCompanyStore();
 const emit = defineEmits(['close', 'submit', 'create:show']);

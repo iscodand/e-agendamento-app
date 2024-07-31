@@ -12,3 +12,14 @@ export type ApplicationUser = {
     userName: string,
     fullName: string
 }
+
+export type InputCreateUser = {
+    userName: string,
+    fullName: string,
+    phoneNumber: string,
+    email: string,
+    roles: string[],
+    companyId: string,
+    password: string,
+    confirmPassword: string
+}

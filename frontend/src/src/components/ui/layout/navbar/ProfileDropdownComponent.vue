@@ -46,7 +46,8 @@ const items: MenuItem[] = [
 </script>
 
 <template>
-    <Menubar class="h-20 border">
+    <!-- style="position: fixed; z-index: 1000;" -->
+    <Menubar class="fixed h-20 top-0 left-0 w-full z-50" style="position: fixed;">
         <template #start>
             <a class="flex ms-2 md:me-24">
                 <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 me-3" alt="FlowBite Logo" />
@@ -60,7 +61,6 @@ const items: MenuItem[] = [
             </Menubar>
         </template>
     </Menubar>
-
 </template>
 
 <style scoped></style>

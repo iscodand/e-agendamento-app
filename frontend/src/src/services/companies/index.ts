@@ -1,7 +1,7 @@
 import http from '../api'
 import type { APIResponse } from '../types'
 import type { User } from '../user/types'
-import type { Company, InputCreateCompany } from './types'
+import type { Company, InputCreateCompany, InputUpdateCompany } from './types'
 
 async function getCompanies(token: string, pageSize: number, pageNumber: number) {
     return await http.get<APIResponse<Company[]>>(`companies?pageSize=${pageSize}&pageNumber=${pageNumber}`, {
@@ -11,8 +11,24 @@ async function getCompanies(token: string, pageSize: number, pageNumber: number)
     })
 }
 
+async function getCompanyById(companyId: string, token: string) {
+    return await http.get<APIResponse<Company>>(`companies/${companyId}`, {
+        headers: {
+            Authorization: 'Bearer ' + token
+        }
+    })
+}
+
 async function createCompany(input: InputCreateCompany, token: string) {
     return await http.post<APIResponse<Company>>('companies', input, {
+        headers: {
+            Authorization: 'Bearer ' + token
+        }
+    })
+}
+
+async function updateCompany(companyId: string, input: InputUpdateCompany, token: string) {
+    return await http.put<APIResponse<Company>>(`companies/${companyId}`, input, {
         headers: {
             Authorization: 'Bearer ' + token
         }
@@ -29,6 +45,8 @@ async function getEmployeesByCompany(companyId: string, token: string) {
 
 export default {
     getCompanies,
+    getCompanyById,
     getEmployeesByCompany,
-    createCompany
+    createCompany,
+    updateCompany
 }

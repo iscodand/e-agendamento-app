@@ -5,7 +5,7 @@ namespace E_Agendamento.Domain.Entities
     public class ApplicationRole : IdentityRole<string>
     {
         public string Description { get; set; }
-        public ICollection<ApplicationUser> Users = [];
+        public ICollection<UsersRoles> UsersRoles { get; set; }
 
         public ApplicationRole()
         {

@@ -40,11 +40,11 @@ namespace E_Agendamento.Application.Features.Categories.Commands.DeleteCategory
                 throw new ApplicationException("Erro ao processar sua solicitação. Verifique e tente novamente");
             }
 
-            bool userAndCategoryAreSameCompanies = user.Companies.Any(x => x.Id == category.CompanyId);
-            if (userAndCategoryAreSameCompanies == false)
-            {
-                throw new CompanyException();
-            }
+            // bool userAndCategoryAreSameCompanies = user.Companies.Any(x => x.Id == category.CompanyId);
+            // if (userAndCategoryAreSameCompanies == false)
+            // {
+            //     throw new CompanyException();
+            // }
 
             if (category.Items.Count != 0)
             {

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace E_Agendamento.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class IntialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -27,7 +27,7 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ROLES",
+                name: "Roles",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -38,11 +38,11 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ROLES", x => x.Id);
+                    table.PrimaryKey("PK_Roles", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "USERS",
+                name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -65,7 +65,7 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_USERS", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -91,7 +91,7 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ROLE_CLAIMS",
+                name: "Roles_Claims",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -102,41 +102,17 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ROLE_CLAIMS", x => x.Id);
+                    table.PrimaryKey("PK_Roles_Claims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ROLE_CLAIMS_ROLES_RoleId",
+                        name: "FK_Roles_Claims_Roles_RoleId",
                         column: x => x.RoleId,
-                        principalTable: "ROLES",
+                        principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ApplicationUserCompany",
-                columns: table => new
-                {
-                    CompaniesId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UsersId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ApplicationUserCompany", x => new { x.CompaniesId, x.UsersId });
-                    table.ForeignKey(
-                        name: "FK_ApplicationUserCompany_Companies_CompaniesId",
-                        column: x => x.CompaniesId,
-                        principalTable: "Companies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ApplicationUserCompany_USERS_UsersId",
-                        column: x => x.UsersId,
-                        principalTable: "USERS",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "USER_CLAIMS",
+                name: "Users_Claims",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -147,17 +123,46 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_USER_CLAIMS", x => x.Id);
+                    table.PrimaryKey("PK_Users_Claims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_USER_CLAIMS_USERS_UserId",
+                        name: "FK_Users_Claims_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "USERS",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "USER_LOGINS",
+                name: "Users_Companies",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CompanyId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users_Companies", x => new { x.UserId, x.CompanyId });
+                    table.ForeignKey(
+                        name: "FK_Users_Companies_Companies_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Companies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Users_Companies_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users_Logins",
                 columns: table => new
                 {
                     LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -167,41 +172,53 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_USER_LOGINS", x => new { x.LoginProvider, x.ProviderKey });
+                    table.PrimaryKey("PK_Users_Logins", x => new { x.LoginProvider, x.ProviderKey });
                     table.ForeignKey(
-                        name: "FK_USER_LOGINS_USERS_UserId",
+                        name: "FK_Users_Logins_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "USERS",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "USER_ROLES",
+                name: "Users_Roles",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId1 = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    RoleId1 = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_USER_ROLES", x => new { x.UserId, x.RoleId });
+                    table.PrimaryKey("PK_Users_Roles", x => new { x.UserId, x.RoleId });
                     table.ForeignKey(
-                        name: "FK_USER_ROLES_ROLES_RoleId",
+                        name: "FK_Users_Roles_Roles_RoleId",
                         column: x => x.RoleId,
-                        principalTable: "ROLES",
+                        principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_USER_ROLES_USERS_UserId",
+                        name: "FK_Users_Roles_Roles_RoleId1",
+                        column: x => x.RoleId1,
+                        principalTable: "Roles",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Users_Roles_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "USERS",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Users_Roles_Users_UserId1",
+                        column: x => x.UserId1,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "USER_TOKENS",
+                name: "Users_Tokens",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -211,11 +228,11 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_USER_TOKENS", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.PrimaryKey("PK_Users_Tokens", x => new { x.UserId, x.LoginProvider, x.Name });
                     table.ForeignKey(
-                        name: "FK_USER_TOKENS_USERS_UserId",
+                        name: "FK_Users_Tokens_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "USERS",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -280,21 +297,16 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
                         principalTable: "Items",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Schedules_USERS_ConfirmedById",
+                        name: "FK_Schedules_Users_ConfirmedById",
                         column: x => x.ConfirmedById,
-                        principalTable: "USERS",
+                        principalTable: "Users",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Schedules_USERS_RequestedById",
+                        name: "FK_Schedules_Users_RequestedById",
                         column: x => x.RequestedById,
-                        principalTable: "USERS",
+                        principalTable: "Users",
                         principalColumn: "Id");
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ApplicationUserCompany_UsersId",
-                table: "ApplicationUserCompany",
-                column: "UsersId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Categories_CompanyId",
@@ -312,16 +324,16 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
                 column: "CompanyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ROLE_CLAIMS_RoleId",
-                table: "ROLE_CLAIMS",
-                column: "RoleId");
-
-            migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
-                table: "ROLES",
+                table: "Roles",
                 column: "NormalizedName",
                 unique: true,
                 filter: "[NormalizedName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Roles_Claims_RoleId",
+                table: "Roles_Claims",
+                column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Schedules_CompanyId",
@@ -344,65 +356,80 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
                 column: "RequestedById");
 
             migrationBuilder.CreateIndex(
-                name: "IX_USER_CLAIMS_UserId",
-                table: "USER_CLAIMS",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_USER_LOGINS_UserId",
-                table: "USER_LOGINS",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_USER_ROLES_RoleId",
-                table: "USER_ROLES",
-                column: "RoleId");
-
-            migrationBuilder.CreateIndex(
                 name: "EmailIndex",
-                table: "USERS",
+                table: "Users",
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
-                table: "USERS",
+                table: "Users",
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Claims_UserId",
+                table: "Users_Claims",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Companies_CompanyId",
+                table: "Users_Companies",
+                column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Logins_UserId",
+                table: "Users_Logins",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Roles_RoleId",
+                table: "Users_Roles",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Roles_RoleId1",
+                table: "Users_Roles",
+                column: "RoleId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Roles_UserId1",
+                table: "Users_Roles",
+                column: "UserId1");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ApplicationUserCompany");
-
-            migrationBuilder.DropTable(
-                name: "ROLE_CLAIMS");
+                name: "Roles_Claims");
 
             migrationBuilder.DropTable(
                 name: "Schedules");
 
             migrationBuilder.DropTable(
-                name: "USER_CLAIMS");
+                name: "Users_Claims");
 
             migrationBuilder.DropTable(
-                name: "USER_LOGINS");
+                name: "Users_Companies");
 
             migrationBuilder.DropTable(
-                name: "USER_ROLES");
+                name: "Users_Logins");
 
             migrationBuilder.DropTable(
-                name: "USER_TOKENS");
+                name: "Users_Roles");
+
+            migrationBuilder.DropTable(
+                name: "Users_Tokens");
 
             migrationBuilder.DropTable(
                 name: "Items");
 
             migrationBuilder.DropTable(
-                name: "ROLES");
+                name: "Roles");
 
             migrationBuilder.DropTable(
-                name: "USERS");
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Categories");

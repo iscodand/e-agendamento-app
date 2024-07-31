@@ -1,6 +1,8 @@
 using E_Agendamento.Application.Features.Companies.Commands.AddUserToCompany;
 using E_Agendamento.Application.Features.Companies.Commands.CreateCompany;
+using E_Agendamento.Application.Features.Companies.Commands.UpdateCompany;
 using E_Agendamento.Application.Features.Companies.Queries.GetAllCompanies;
+using E_Agendamento.Application.Features.Companies.Queries.GetCompanyById;
 using E_Agendamento.Application.Features.Employees.Queries.GetEmployeesByCompany;
 using E_Agendamento.Domain.Enums;
 using E_Agendamento.WebAPI.Controllers.Common;
@@ -25,6 +27,13 @@ namespace E_Agendamento.WebAPI.Controllers.v1
             return Ok(await Mediator.Send(query));
         }
 
+        [HttpGet("{companyId}/")]
+        public async Task<IActionResult> Get(string companyId)
+        {
+            GetCompanyByIdQuery query = new() { Id = companyId };
+            return Ok(await Mediator.Send(query));
+        }
+
         [HttpGet("{companyId}/employees")]
         public async Task<IActionResult> Get(string companyId, [FromQuery] GetEmployeesByCompanyQuery filter)
         {
@@ -38,7 +47,6 @@ namespace E_Agendamento.WebAPI.Controllers.v1
             return Ok(await Mediator.Send(query));
         }
 
-
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateCompanyCommand request)
         {
@@ -49,6 +57,13 @@ namespace E_Agendamento.WebAPI.Controllers.v1
         public async Task<IActionResult> AddUserToCompany(string companyId, [FromBody] AddUserToCompanyCommand request)
         {
             request.CompanyId = companyId;
+            return Ok(await Mediator.Send(request));
+        }
+
+        [HttpPut("{companyId}/")]
+        public async Task<IActionResult> Put(string companyId, [FromBody] UpdateCompanyCommand request)
+        {
+            request.Id = companyId;
             return Ok(await Mediator.Send(request));
         }
     }

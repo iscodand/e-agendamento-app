@@ -5,6 +5,7 @@
 
 # Project files
 .env
+*/appsettings.json
 
 # User-specific files
 *.rsuser
@@ -399,3 +400,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+backend/src/E-Agendamento.WebAPI/appsettings.json

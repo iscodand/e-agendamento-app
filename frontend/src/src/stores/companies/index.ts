@@ -1,5 +1,5 @@
 import { API } from "@/services";
-import type { Company, InputCreateCompany } from "@/services/companies/types";
+import type { Company, InputCreateCompany, InputUpdateCompany } from "@/services/companies/types";
 import type { APIResponse, RequestParameters } from "@/services/types";
 import type { User } from "@/services/user/types";
 import type { AxiosError } from "axios";
@@ -8,6 +8,8 @@ import { ref } from "vue";
 
 export const useCompanyStore = defineStore("companyStore", () => {
     const companies = ref<Company[]>([]);
+
+    const token = ref<string>();
     
     // TODO => separar employees de companies ???
     const employees = ref<User[]>([]);
@@ -22,9 +24,14 @@ export const useCompanyStore = defineStore("companyStore", () => {
             companies.value.push(company);
     }
 
+    function getToken(): string {
+        token.value = localStorage.getItem('token') || ''
+        return token.value;
+    } 
+
     async function dispatchGetCompanies(parameters: RequestParameters): Promise<APIResponse<Company[]>> {
         try {
-            const { status, data } = await API.companies.getCompanies(localStorage.getItem('token') || '', parameters.pageSize, parameters.pageNumber);
+            const { status, data } = await API.companies.getCompanies(getToken(), parameters.pageSize, parameters.pageNumber);
             if (status === 200 && data.data) {
                 initCompanies(data.data);
 
@@ -35,6 +42,36 @@ export const useCompanyStore = defineStore("companyStore", () => {
                     totalItems: data.totalItems
                 };
             }
+        } catch (error) {
+            const _error = error as AxiosError<string>;
+            
+            return {
+                succeeded: false,
+                status: _error.response?.status,
+                data: undefined
+            };
+        }
+
+        return {
+            succeeded: false,
+            status: 400,
+            data: undefined
+        };
+    }
+    
+    async function dispatchGetCompanyById(companyId: string): Promise<APIResponse<Company>> {
+        try {
+            const { status, data } = await API.companies.getCompanyById(companyId, localStorage.getItem('token') || '');
+            if (status === 200 && data.data) {
+                return {
+                    succeeded: true,
+                    data: data.data,
+                    status: status,
+                    totalItems: data.totalItems
+                };
+            }
+
+        // TODO => arrumar essa mensagem de erro (not found???)
         } catch (error) {
             const _error = error as AxiosError<string>;
             
@@ -82,13 +119,13 @@ export const useCompanyStore = defineStore("companyStore", () => {
         };
     }
 
-    // TODO => separar employees de companies ???
-    async function dispatchGetEmployeesByCompany(companyId: string): Promise<APIResponse<User[]>> {
+    async function dispatchUpdateCompany(companyId: string, updatedCompany: InputUpdateCompany): Promise<APIResponse<Company>> {
         try {
-            const {status, data} = await API.companies.getEmployeesByCompany(companyId, localStorage.getItem('token') || '');
+            const { status, data} = await API.companies.updateCompany(companyId, updatedCompany, getToken())
 
             if (status === 200) {
-                employees.value = data.data!;
+                const index = companies.value.findIndex(company => company.id === companyId);
+                companies.value[index] = data.data!;
                 return {
                     succeeded: true,
                     data: data.data,
@@ -101,11 +138,10 @@ export const useCompanyStore = defineStore("companyStore", () => {
             return {
                 succeeded: false,
                 status: _error.response?.status,
-                // data: null,
                 errors: _error.response?.data.Errors
             };
         }
-        
+
         return {
             succeeded: false,
             status: 400,
@@ -115,7 +151,8 @@ export const useCompanyStore = defineStore("companyStore", () => {
 
     return {
         dispatchGetCompanies,
+        dispatchGetCompanyById,
         dispatchCreateCompany,
-        dispatchGetEmployeesByCompany
+        dispatchUpdateCompany,
     }
 })

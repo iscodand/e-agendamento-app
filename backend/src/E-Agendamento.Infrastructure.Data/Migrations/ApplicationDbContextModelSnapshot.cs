@@ -22,21 +22,6 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ApplicationUserCompany", b =>
-                {
-                    b.Property<string>("CompaniesId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("UsersId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("CompaniesId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("ApplicationUserCompany", (string)null);
-                });
-
             modelBuilder.Entity("E_Agendamento.Domain.Entities.ApplicationRole", b =>
                 {
                     b.Property<string>("Id")
@@ -64,7 +49,7 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
                         .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("ROLES", (string)null);
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("E_Agendamento.Domain.Entities.ApplicationUser", b =>
@@ -135,7 +120,7 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("USERS", (string)null);
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("E_Agendamento.Domain.Entities.Category", b =>
@@ -165,7 +150,7 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("E_Agendamento.Domain.Entities.Company", b =>
@@ -187,7 +172,7 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Companies", (string)null);
+                    b.ToTable("Companies");
                 });
 
             modelBuilder.Entity("E_Agendamento.Domain.Entities.Item", b =>
@@ -234,7 +219,7 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("Items", (string)null);
+                    b.ToTable("Items");
                 });
 
             modelBuilder.Entity("E_Agendamento.Domain.Entities.Schedule", b =>
@@ -276,7 +261,62 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
 
                     b.HasIndex("RequestedById");
 
-                    b.ToTable("Schedules", (string)null);
+                    b.ToTable("Schedules");
+                });
+
+            modelBuilder.Entity("E_Agendamento.Domain.Entities.UsersCompanies", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CompanyId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "CompanyId");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("Users_Companies", (string)null);
+                });
+
+            modelBuilder.Entity("E_Agendamento.Domain.Entities.UsersRoles", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("RoleId1")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserId1")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("RoleId1");
+
+                    b.HasIndex("UserId1");
+
+                    b.ToTable("Users_Roles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -301,7 +341,7 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("ROLE_CLAIMS", (string)null);
+                    b.ToTable("Roles_Claims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -326,7 +366,7 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("USER_CLAIMS", (string)null);
+                    b.ToTable("Users_Claims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -348,22 +388,7 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("USER_LOGINS", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("USER_ROLES", (string)null);
+                    b.ToTable("Users_Logins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -382,22 +407,7 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("USER_TOKENS", (string)null);
-                });
-
-            modelBuilder.Entity("ApplicationUserCompany", b =>
-                {
-                    b.HasOne("E_Agendamento.Domain.Entities.Company", null)
-                        .WithMany()
-                        .HasForeignKey("CompaniesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("E_Agendamento.Domain.Entities.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.ToTable("Users_Tokens", (string)null);
                 });
 
             modelBuilder.Entity("E_Agendamento.Domain.Entities.Category", b =>
@@ -451,6 +461,52 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
                     b.Navigation("RequestedBy");
                 });
 
+            modelBuilder.Entity("E_Agendamento.Domain.Entities.UsersCompanies", b =>
+                {
+                    b.HasOne("E_Agendamento.Domain.Entities.Company", "Company")
+                        .WithMany("UsersCompanies")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("E_Agendamento.Domain.Entities.ApplicationUser", "User")
+                        .WithMany("UsersCompanies")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("E_Agendamento.Domain.Entities.UsersRoles", b =>
+                {
+                    b.HasOne("E_Agendamento.Domain.Entities.ApplicationRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("E_Agendamento.Domain.Entities.ApplicationRole", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId1");
+
+                    b.HasOne("E_Agendamento.Domain.Entities.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("E_Agendamento.Domain.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId1");
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("E_Agendamento.Domain.Entities.ApplicationRole", null)
@@ -478,21 +534,6 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.HasOne("E_Agendamento.Domain.Entities.ApplicationRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("E_Agendamento.Domain.Entities.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.HasOne("E_Agendamento.Domain.Entities.ApplicationUser", null)
@@ -500,6 +541,11 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("E_Agendamento.Domain.Entities.ApplicationUser", b =>
+                {
+                    b.Navigation("UsersCompanies");
                 });
 
             modelBuilder.Entity("E_Agendamento.Domain.Entities.Category", b =>
@@ -514,6 +560,8 @@ namespace E_Agendamento.Infrastructure.Data.Migrations
                     b.Navigation("Items");
 
                     b.Navigation("Schedules");
+
+                    b.Navigation("UsersCompanies");
                 });
 #pragma warning restore 612, 618
         }
