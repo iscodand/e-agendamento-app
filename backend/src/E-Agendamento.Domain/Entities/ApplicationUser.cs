@@ -1,9 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace E_Agendamento.Domain.Entities
 {
@@ -16,8 +11,9 @@ namespace E_Agendamento.Domain.Entities
         // public string RefreshToken { get; set; }
         // public DateTime RefreshTokenValidityTime { get; set; }
 
-        public ICollection<Company> Companies { get; set; } = [];
-        public ICollection<ApplicationRole> Roles { get; set; } = [];
+        public ICollection<UsersRoles> UsersRoles { get; set; }
+        public ICollection<UsersCompanies> UsersCompanies { get; set; }
+        // public ICollection<ApplicationRole> Roles { get; set; } = [];
         // public ICollection<Schedule> Schedules { get; set; }
 
         public ApplicationUser()

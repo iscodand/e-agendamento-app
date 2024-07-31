@@ -6,7 +6,7 @@ namespace E_Agendamento.Application.Contracts.Services
     public interface IAccountService
     {
         public Task<Response<AuthenticationResponse>> AuthenticateAsync(AuthenticationRequest request);
-        public Task<Response<string>> RegisterAsync(RegisterRequest request, string origin);
+        public Task<Response<RetrieveUserResponse>> RegisterAsync(RegisterRequest request, string origin);
         public Response<string> VerifyToken(string token);
         public Task<Response<RetrieveUserResponse>> GetAuthenticatedUserAsync(string userId);
         public Task<Response<string>> ConfirmEmailAsync(string userId, string code);

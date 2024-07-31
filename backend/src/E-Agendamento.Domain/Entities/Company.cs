@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using E_Agendamento.Domain.Entities.Common;
 
 namespace E_Agendamento.Domain.Entities
@@ -11,7 +12,7 @@ namespace E_Agendamento.Domain.Entities
 
         // TODO => implement auditable entity
 
-        public ICollection<ApplicationUser> Users { get; set; } = [];
+        public ICollection<UsersCompanies> UsersCompanies { get; set; }
         public ICollection<Item> Items { get; set; }
         public ICollection<Category> Categories { get; set; }
         public ICollection<Schedule> Schedules { get; set; }

@@ -7,6 +7,7 @@ using E_Agendamento.Application.DTOs.Email;
 using E_Agendamento.Application.Exceptions;
 using E_Agendamento.Application.Wrappers;
 using E_Agendamento.Domain.Entities;
+using E_Agendamento.Infrastructure.Data.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
@@ -20,23 +21,27 @@ namespace E_Agendamento.Infrastructure.Identity.Services
         private readonly ITokenService _tokenService;
         private readonly IEmailService _emailService;
         private readonly ICompanyRepository _companyRepository;
+        private readonly IUserRoleRepository _userRoleRepository;
 
         public AccountService(UserManager<ApplicationUser> userManager,
                               IEmailService emailService,
                               ICompanyRepository companyRepository,
-                              ITokenService tokenService)
+                              ITokenService tokenService,
+                              IUserRoleRepository userRoleRepository)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _emailService = emailService;
             _companyRepository = companyRepository;
             _tokenService = tokenService;
+            _userRoleRepository = userRoleRepository;
         }
 
         public async Task<Response<AuthenticationResponse>> AuthenticateAsync(AuthenticationRequest request)
         {
             ApplicationUser user = await _userManager.Users
-                .Include(x => x.Companies)
+                .Include(x => x.UsersCompanies)
+                .ThenInclude(x => x.Company)
                 .Where(x => x.UserName == request.Username)
                 .FirstOrDefaultAsync()
                 .ConfigureAwait(false);
@@ -63,7 +68,7 @@ namespace E_Agendamento.Infrastructure.Identity.Services
             }
 
             ICollection<string> roles = await _userManager.GetRolesAsync(user);
-            ICollection<string> companies = user.Companies.Select(x => x.Id).ToList();
+            ICollection<string> companies = user.UsersCompanies.Select(x => x.Company).Select(x => x.Id).ToList();
 
             JwtSecurityToken jwtSecurityToken = _tokenService.GenerateJWToken(user, roles, companies);
             string accessToken = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
@@ -84,10 +89,13 @@ namespace E_Agendamento.Infrastructure.Identity.Services
         public async Task<Response<RetrieveUserResponse>> GetAuthenticatedUserAsync(string userId)
         {
             ApplicationUser user = await _userManager.Users
-                .Include(x => x.Companies)
+                .Include(x => x.UsersCompanies)
+                .ThenInclude(x => x.Company)
                 .Where(x => x.Id == userId)
                 .FirstOrDefaultAsync()
                 .ConfigureAwait(false);
+
+            var roles = await _userRoleRepository.GetUserRolesByUserIdAsync(userId);
 
             if (user is null)
             {
@@ -95,8 +103,8 @@ namespace E_Agendamento.Infrastructure.Identity.Services
                 throw new ApiException("Procedimento Inválido. Realize o login e tente novamente.");
             }
 
-            ICollection<string> roles = await _userManager.GetRolesAsync(user);
-            ICollection<string> companies = user.Companies.Select(x => x.Id).ToList();
+            // ICollection<string> roles = user.UsersRoles.Select(x => x.Role).;
+            ICollection<string> companies = user.UsersCompanies.Select(x => x.Company).Select(x => x.Id).ToList();
 
             RetrieveUserResponse response = new()
             {
@@ -104,66 +112,76 @@ namespace E_Agendamento.Infrastructure.Identity.Services
                 FullName = user.FullName,
                 UserName = user.UserName,
                 Email = user.Email,
-                Roles = roles,
+                Roles = roles.Select(x => x.Name).ToList(),
                 Companies = companies
             };
 
             return new Response<RetrieveUserResponse>("Usuário recuperado com sucesso.", response);
         }
 
-        public async Task<Response<string>> RegisterAsync(RegisterRequest request, string origin)
+        public async Task<Response<RetrieveUserResponse>> RegisterAsync(RegisterRequest request, string origin)
         {
             bool userNameAlreadyRegistered = await _userManager.Users.AnyAsync(x => x.UserName == request.UserName);
             if (userNameAlreadyRegistered)
             {
-                throw new ApiException("Esse nome de usuário já está em uso. Verifique e tente novamente.");
+                throw new ValidationException([new("Username", "Esse nome de usuário já está em uso. Verifique e tente novamente.")]);
             }
 
             bool emailAlreadyRegistered = await _userManager.Users.AnyAsync(x => x.Email == request.Email);
             if (userNameAlreadyRegistered)
             {
-                throw new ApiException("Esse e-mail já está em uso. Verifique e tente novamente.");
+                throw new ValidationException([new("Email", "Esse e-mail já está em uso. Verifique e tente novamente.")]);
             }
 
-            bool phoneNumberAlreadyRegistered = await _userManager.Users.AnyAsync(x => x.PhoneNumber == request.PhoneNumber);
-            if (phoneNumberAlreadyRegistered)
-            {
-                throw new ApiException("Esse número de telefone já está em uso. Verifique e tente novamente.");
-            }
+            // bool phoneNumberAlreadyRegistered = await _userManager.Users.AnyAsync(x => x.PhoneNumber == request.PhoneNumber);
+            // if (phoneNumberAlreadyRegistered)
+            // {
+            //     throw new ValidationException([ne"", w ("Esse número de telefone já está em uso. Verifique e tente novamente.")]);
+            // }
 
             ApplicationUser newUser = RegisterRequest.Map(request);
 
             Company company = await _companyRepository.GetByIdAsync(request.CompanyId);
             if (company is null)
             {
-                throw new ApiException("Empresa não encontrada. Verifique e tente novamente.");
+                throw new ValidationException([new("CompanyId", "Empresa não encontrada. Verifique e tente novamente.")]);
             }
 
             IdentityResult result = await _userManager.CreateAsync(newUser, request.Password);
             if (!result.Succeeded)
             {
-                throw new ApiException($"Ops! Ocorreu um erro ao processar a solicitação. {result.Errors.Select(x => x.Description).FirstOrDefault()}");
+                throw new ValidationException([new("0", $"Ops! Ocorreu um erro ao processar a solicitação. {result.Errors.Select(x => x.Description).FirstOrDefault()}")]);
             }
 
             await _companyRepository.AddUserToCompanyAsync(company, newUser);
             await _userManager.AddToRolesAsync(newUser, request.Roles);
 
             // Isco: envio de e-mail de verificação
-            string verificationUri = await SendVerificationEmail(newUser, origin);
+            // string verificationUri = await SendVerificationEmail(newUser, origin);
 
-            EmailRequest emailRequest = new()
+            // EmailRequest emailRequest = new()
+            // {
+            //     To = newUser.Email,
+            //     Subject = "Confirmar Cadastro no E-Agendamento.",
+            //     Body = $"Confirme sua conta através do link: {verificationUri}",
+            //     From = "nao-responda@e-agendamento.com"
+            // };
+
+            // await _emailService.SendEmailAsync(emailRequest);
+
+            RetrieveUserResponse response = new()
             {
-                To = newUser.Email,
-                Subject = "Confirmar Cadastro no E-Agendamento.",
-                Body = $"Confirme sua conta através do link: {verificationUri}",
-                From = "nao-responda@e-agendamento.com"
+                Id = newUser.Id,
+                FullName = newUser.FullName,
+                UserName = newUser.UserName,
+                Email = newUser.Email,
+                Roles = request.Roles,
+                Companies = [request.CompanyId]
             };
 
-            await _emailService.SendEmailAsync(emailRequest);
-
-            return new Response<string>(
+            return new(
                 "Usuário cadastrado com sucesso",
-                null
+                response
             );
         }
 

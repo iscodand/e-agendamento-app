@@ -7,7 +7,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace E_Agendamento.Infrastructure.Data.Context
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser,
+                                                          ApplicationRole,
+                                                          string,
+                                                          IdentityUserClaim<string>,
+                                                          UsersRoles,
+                                                          IdentityUserLogin<string>,
+                                                          IdentityRoleClaim<string>,
+                                                          IdentityUserToken<string>>
     {
         private readonly IDateTimeService _dateTime;
         private readonly IAuthenticatedUserService _authenticatedUser;
@@ -25,6 +32,8 @@ namespace E_Agendamento.Infrastructure.Data.Context
         public DbSet<Item> Items { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Company> Companies { get; set; }
+        public DbSet<UsersRoles> UsersRoles { get; set; }
+        public DbSet<UsersCompanies> UsersCompanies { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
@@ -50,6 +59,19 @@ namespace E_Agendamento.Infrastructure.Data.Context
         {
             base.OnModelCreating(builder);
 
+            builder.Entity<UsersCompanies>()
+                .HasKey(uc => new { uc.UserId, uc.CompanyId });
+
+            builder.Entity<UsersCompanies>()
+                .HasOne(uc => uc.User)
+                .WithMany(u => u.UsersCompanies)
+                .HasForeignKey(uc => uc.UserId);
+
+            builder.Entity<UsersCompanies>()
+                .HasOne(uc => uc.Company)
+                .WithMany(c => c.UsersCompanies)
+                .HasForeignKey(uc => uc.CompanyId);
+
             // Isco: all decimals will have 18,6 range.
             // foreach (var property in builder.Model.GetEntityTypes()
             //     .SelectMany(t => t.GetProperties())
@@ -69,29 +91,34 @@ namespace E_Agendamento.Infrastructure.Data.Context
                 entity.ToTable(name: "Roles");
             });
 
-            builder.Entity<IdentityUserRole<string>>(entity =>
+            builder.Entity<UsersRoles>(entity =>
             {
-                entity.ToTable(name: "User_Roles");
+                entity.ToTable(name: "Users_Roles");
             });
 
             builder.Entity<IdentityUserClaim<string>>(entity =>
             {
-                entity.ToTable(name: "User_Claims");
+                entity.ToTable(name: "Users_Claims");
             });
 
             builder.Entity<IdentityUserLogin<string>>(entity =>
             {
-                entity.ToTable(name: "User_Logins");
+                entity.ToTable(name: "Users_Logins");
             });
 
             builder.Entity<IdentityRoleClaim<string>>(entity =>
             {
-                entity.ToTable(name: "Role_Claims");
+                entity.ToTable(name: "Roles_Claims");
             });
 
             builder.Entity<IdentityUserToken<string>>(entity =>
             {
-                entity.ToTable(name: "User_Tokens");
+                entity.ToTable(name: "Users_Tokens");
+            });
+
+            builder.Entity<UsersCompanies>(entity =>
+            {
+                entity.ToTable(name: "Users_Companies");
             });
         }
     }

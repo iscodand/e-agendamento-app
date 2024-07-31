@@ -73,11 +73,15 @@ namespace E_Agendamento.Infrastructure.Identity
                         },
                         OnChallenge = context =>
                         {
-                            context.HandleResponse();
-                            context.Response.StatusCode = 401;
-                            context.Response.ContentType = "application/json";
-                            var result = JsonConvert.SerializeObject(new Response<string>("Você não está autorizado."));
-                            return context.Response.WriteAsync(result);
+                            if (!context.Response.HasStarted)
+                            {
+                                context.Response.StatusCode = 401;
+                                context.Response.ContentType = "application/json";
+                                var result = JsonConvert.SerializeObject(new Response<string>("Você não está autorizado."));
+                                return context.Response.WriteAsync(result);
+                            }
+
+                            return Task.CompletedTask;
                         },
                         OnForbidden = context =>
                         {
