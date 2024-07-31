@@ -12,12 +12,14 @@ const isAdmin: Boolean = props.user.roles.includes('Admin');
 
 <template>
   <div>
-    <ProfileDropdownComponent :user="user" class="relative border border-red-600" />
+    <ProfileDropdownComponent :user="user" />
+  </div>
 
+  <div class="mt-20">
     <aside id="logo-sidebar"
-      class="fixed left-0 z-40 w-64 h-screen pt-10 transition-transform -translate-x-full border-r border-gray-200 sm:translate-x-0 bg-gray-800 border-gray-700"
+      class="fixed left-0 z-40 w-64 pt-8 h-screen transition-transform -translate-x-full border-r border-gray-200 sm:translate-x-0 bg-gray-800"
       aria-label="Sidebar">
-      <div class="h-full px-3 pb-4 overflow-y-auto bg-gray-800">
+      <div class="px-3">
         <ul class="space-y-2 font-medium">
           <ItemListComponent link="/home" title="Home" :icon="HomeIcon" />
           <ItemListComponent link="/meus-agendamentos" title="Meus Agendamentos" :icon="ClockIcon" />
@@ -25,8 +27,8 @@ const isAdmin: Boolean = props.user.roles.includes('Admin');
             :icon="ClockIcon" />
           <ItemListComponent link="/categorias" title="Categorias" :icon="SwatchIcon" />
           <ItemListComponent link="/items" title="Itens" :icon="TagIcon" />
-          <ItemListComponent v-if="isAdmin || isSuperAdmin" link="/funcionarios" title="Funcionários"
-            :icon="UsersIcon" />
+          <!-- <ItemListComponent v-if="isAdmin || isSuperAdmin" link="/funcionarios" title="Funcionários"
+        :icon="UsersIcon" /> -->
           <ItemListComponent v-if="isAdmin || isSuperAdmin" link="/empresas" title="Empresas"
             :icon="BuildingOffice2Icon" />
         </ul>

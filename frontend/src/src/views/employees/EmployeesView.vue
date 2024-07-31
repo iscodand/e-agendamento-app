@@ -14,14 +14,16 @@ import AutoComplete from 'primevue/autocomplete';
 
 // Animations
 import NotFoundAnimation from '@/assets/animations/not-found/NotFoundAnimation.vue'
+import { useUserStore } from '@/stores/user';
 
 const employees = ref<User[]>([]);
 const companies = ref<Company[]>([]);
 const selectedCompanyId = ref<Company>();
 const companyStore = useCompanyStore();
+const userStore = useUserStore();
 
 const fetchEmployees = async () => {
-    const { succeeded, data } = await companyStore.dispatchGetEmployeesByCompany(selectedCompanyId.value!.id);
+    const { succeeded, data } = await userStore.dispatchGetEmployeesByCompany(selectedCompanyId.value!.id);
 
     if (succeeded) {
         employees.value = data!;

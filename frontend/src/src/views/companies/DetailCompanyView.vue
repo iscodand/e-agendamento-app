@@ -1,13 +1,14 @@
 <script setup lang="ts">
 
 import MainComponent from '@/components/ui/layout/MainComponent.vue';
-import type { Company } from '@/services/companies/types';
+import type { Company, InputUpdateCompany } from '@/services/companies/types';
 import { useCompanyStore } from '@/stores/companies';
 import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import type { User } from '@/services/user/types';
 import CardComponent from '@/components/ui/dashboard/CardComponent.vue';
 import NotFoundAnimation from '@/assets/animations/not-found/NotFoundAnimation.vue';
+import CreateEmployeeView from '../employees/CreateEmployeeView.vue';
 
 //
 import Tab from 'primevue/tab';
@@ -15,26 +16,54 @@ import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
 import TabPanel from 'primevue/tabpanel';
 import TabPanels from 'primevue/tabpanels';
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
+import Toast from 'primevue/toast';
+import { useToast } from 'primevue/usetoast';
+import Chip from 'primevue/chip';
 
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 
 import Tag from 'primevue/tag';
 import Button from 'primevue/button';
+import ToggleButton from 'primevue/togglebutton';
+import ErrorMessageComponent from '@/components/ui/error/ErrorMessageComponent.vue';
+import { useUserStore } from '@/stores/user';
 
+const toast = useToast();
 const companyStore = useCompanyStore();
+const userStore = useUserStore();
 const route = useRoute();
 
 const company = ref<Company>({
     id: "",
-    name: "Teste",
+    name: "",
     description: "",
     cnpj: "",
     isActive: true
 });
 
+// show create item modal
+const showCreateNewUser = ref(false);
+function showCreateNewUserHandler() {
+    console.log("entoro")
+    showCreateNewUser.value = true;
+}
+function hideCreateItemModalHandler() {
+    showCreateNewUser.value = false;
+}
+
 const employees = ref<User[]>();
+const errorMessages = ref<string[]>([]);
+
+let request = ref<InputUpdateCompany>({
+    name: company.value.name,
+    cnpj: company.value.cnpj,
+    description: company.value.description,
+    isActive: company.value.isActive
+})
 
 const companyId = route.params.id.toString();
 
@@ -44,13 +73,40 @@ onMounted(async () => {
     if (succeeded) {
         loadEmployees();
         company.value = data;
+        request.value = {
+            name: company.value.name,
+            cnpj: company.value.cnpj,
+            description: company.value.description,
+            isActive: company.value.isActive
+        }
     } else {
         console.log('deu ruim')
     }
 })
 
+async function updateCompany() {
+    errorMessages.value = [];
+
+    const response = await companyStore.dispatchUpdateCompany(companyId, request.value);
+
+    if (response.succeeded) {
+        toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Empresa atualizada com sucesso.', life: 3000 });
+        enableUpdate()
+
+        company.value = {
+            id: companyId,
+            name: request.value.name,
+            cnpj: request.value.cnpj,
+            description: request.value.description,
+            isActive: request.value.isActive
+        }
+    } else {
+        errorMessages.value.push(response.errors![0]);
+    }
+}
+
 async function loadEmployees() {
-    const { data, succeeded } = await companyStore.dispatchGetEmployeesByCompany(companyId)
+    const { data, succeeded } = await userStore.dispatchGetEmployeesByCompany(companyId)
 
     if (succeeded) {
         employees.value = data;
@@ -60,6 +116,17 @@ async function loadEmployees() {
 }
 
 const isCompanyLoaded = computed(() => company.value !== null);
+
+const updateDisabled = ref<boolean>(true);
+
+function enableUpdate() {
+    errorMessages.value = []
+    updateDisabled.value = !updateDisabled.value;
+}
+
+function formatRoles(roles: string[]) {
+    return roles.join(", ");
+}
 
 </script>
 
@@ -107,60 +174,104 @@ const isCompanyLoaded = computed(() => company.value !== null);
                     <br>
 
                     <TabPanels>
-                        <TabPanel value="0" class="flex flex-col items-center mt-4 mb-8">
-                            <div class="flex gap-8 items-center">
-                                <div class="flex flex-col gap-2 mb-4 w-64">
-                                    <label for="companyName">
-                                        Nome da Empresa
-                                    </label>
-                                    <InputText id="companyName" v-model="company.name"
-                                        :invalid="company.name.length < 5" :disabled=true />
+                        <TabPanel value="0" class="flex flex-col mt-4 mb-8">
+
+                            <section id="companyDetails">
+                                <div class="flex gap-10">
+                                    <div class="flex flex-col gap-2 mb-2 w-64">
+                                        <label for="companyName">
+                                            Nome da Empresa
+                                        </label>
+                                        <InputText id="companyName" v-model="request.name"
+                                            :invalid="request.name.length < 5" :disabled=updateDisabled />
+                                    </div>
+
+                                    <div class="flex flex-col gap-2 mb-4 w-64">
+                                        <label for="companyDescription">
+                                            Descrição
+                                        </label>
+                                        <InputText id="companyDescription" v-model="request.description"
+                                            :disabled=updateDisabled />
+                                    </div>
                                 </div>
 
-                                <div class="flex flex-col gap-2 mb-4 w-64">
-                                    <label for="companyDescription">
-                                        Descrição
-                                    </label>
-                                    <InputText id="companyDescription" v-model="company.description" :disabled=true />
+                                <div class="flex gap-10">
+                                    <div class="flex flex-col gap-2 mb-4 w-64">
+                                        <label for="companyCNPJ">
+                                            CNPJ
+                                        </label>
+                                        <InputText id="companyCNPJ" v-model="request.cnpj" v-mask="'##.###.###/####-##'"
+                                            :disabled=updateDisabled />
+                                    </div>
+
+                                    <div class="flex flex-col gap-2 mb-4 w-64">
+                                        <label for="companyIsActive">
+                                            Situação
+                                        </label>
+                                        <ToggleButton v-model="request.isActive" onLabel="Ativa" offLabel="Inativa"
+                                            onIcon="pi pi-check" offIcon="pi pi-times" class="w-full sm:w-40"
+                                            aria-label="Confirmation" :disabled=updateDisabled />
+                                    </div>
                                 </div>
 
-                                <div class="flex flex-col gap-2 mb-4 w-64">
-                                    <label for="companyCNPJ">
-                                        CNPJ
-                                    </label>
-                                    <InputText id="companyCNPJ" v-model="company.cnpj" v-mask="'##.###.###/####-##'"
-                                        :disabled=true />
+                                <div class="w-96 mt-4">
+                                    <ErrorMessageComponent :messages="errorMessages" />
                                 </div>
 
-                                <div class="mt-3">
-                                    <Button label="Editar" icon="pi pi-pencil" />
+                                <div class="mt-2 mb-8">
+                                    <Button v-if="updateDisabled" label="Editar" icon="pi pi-pencil"
+                                        @click="enableUpdate" severity="info" />
+
+                                    <Toast />
+                                    <div class="flex gap-8">
+                                        <Button v-if="!updateDisabled" label="Cancelar" severity="danger"
+                                            icon="pi pi-times" @click="enableUpdate" />
+                                        <Button v-if="!updateDisabled" label="Salvar" @click="updateCompany"
+                                            icon="pi pi-check" />
+                                    </div>
                                 </div>
-                            </div>
+                            </section>
 
                             <hr>
 
-                            <div class="flex gap-8">
-                                <div class="mt-10">
-                                    <CardComponent title="Agendamentos em Aberto" :stat=3 icon="pi-calendar-clock" />
+                            <section id="cards">
+                                <div class="flex gap-8">
+                                    <div class="mt-10">
+                                        <CardComponent title="Agendamentos em Aberto" :stat=3
+                                            icon="pi-calendar-clock" />
+                                    </div>
+                                    <div class="mt-10">
+                                        <CardComponent title="Itens cadastrados" :stat=17 icon="pi-tag" />
+                                    </div>
+                                    <div class="mt-10">
+                                        <CardComponent title="Funcionários ativos" :stat=3 icon="pi-users" />
+                                    </div>
                                 </div>
-                                <div class="mt-10">
-                                    <CardComponent title="Itens cadastrados" :stat=17 icon="pi-tag" />
-                                </div>
-                                <div class="mt-10">
-                                    <CardComponent title="Funcionários ativos" :stat=3 icon="pi-users" />
-                                </div>
-                            </div>
+                            </section>
                         </TabPanel>
 
                         <TabPanel value="1">
+                            <div class="flex col-span-2 m-4 items-center justify-between">
+                                <div class="flex justify-start">
+                                    <IconField>
+                                        <InputIcon class="pi pi-search" />
+                                        <InputText placeholder="Buscar Funcionário" />
+                                    </IconField>
+                                </div>
+                                <div class="flex justify-end">
+                                    <Button label="Adicionar novo usuário" size="small"
+                                        @click="showCreateNewUserHandler" />
+                                </div>
+                            </div>
+
                             <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                                 <DataTable :value="employees" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"
                                     tableStyle="min-width: 50rem">
 
                                     <template #empty>
-                                        <!-- TODO => desenvolver view para cadastrar novo usuario -->
                                         <NotFoundAnimation text="Essa empresa não possui funcionários cadastrados."
-                                            buttonLabel="Clique aqui para adicionar" />
+                                            buttonLabel="Clique aqui para adicionar"
+                                            :action="showCreateNewUserHandler" />
                                     </template>
 
                                     <Column field="fullName" header="Nome" style="width: 25%"></Column>
@@ -176,7 +287,12 @@ const isCompanyLoaded = computed(() => company.value !== null);
                                             </div>
                                         </template>
                                     </Column>
-                                    <Column field="roles" header="Cargos" style="width: 25%"></Column>
+                                    <Column field="roles" header="Cargos" style="width: 25%">
+                                        <template #body="slotProps">
+                                            <Tag class="py-0 pl-0 pr-4" :value="formatRoles(slotProps.data.roles)"
+                                                severity="info" />
+                                        </template>
+                                    </Column>
                                 </DataTable>
                             </div>
                         </TabPanel>
@@ -204,6 +320,10 @@ const isCompanyLoaded = computed(() => company.value !== null);
         <span>FOSASE</span>
     </div>
 
+    <!-- TODO => padronizar "user" ou "employee" -->
+
+    <CreateEmployeeView :show="showCreateNewUser" :company-name="company.name" :company-id="company.id"
+        @close="hideCreateItemModalHandler" />
 
     <!-- DIVIDIR EM TABS -->
 

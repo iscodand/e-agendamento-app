@@ -11,3 +11,10 @@ export type InputCreateCompany = {
     cnpj: string,
     description: string
 }
+
+export type InputUpdateCompany = {
+    name: string,
+    cnpj: string,
+    description: string,
+    isActive: boolean
+}

@@ -91,7 +91,8 @@ onMounted(async () => {
                         tableStyle="min-width: 50rem">
 
                         <template #empty>
-                            <NotFoundAnimation text="Você não possui categorias cadastradas." />
+                            <NotFoundAnimation text="Você não possui categorias cadastradas."
+                                buttonLabel="Clique aqui para adicionar" :action="showCreateCategoryDialogHandler" />
                         </template>
 
                         <Column field="description" header="Descrição" style="width: 50%" class="truncate"></Column>
