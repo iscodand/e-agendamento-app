@@ -3,6 +3,7 @@ using E_Agendamento.Application.Features.Categories.Commands.CreateCategory;
 using E_Agendamento.Application.Features.Categories.Commands.DeleteCategory;
 using E_Agendamento.Application.Features.Categories.Commands.UpdateCategory;
 using E_Agendamento.Application.Features.Categories.Queries.GetCategoriesByCompany;
+using E_Agendamento.Application.Wrappers;
 using E_Agendamento.WebAPI.Controllers.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +23,7 @@ namespace E_Agendamento.WebAPI.Controllers.v1
             };
 
             if (query.CompanyId is null)
-                return StatusCode(StatusCodes.Status401Unauthorized, "Você não tem permissão.");
+                return StatusCode(StatusCodes.Status401Unauthorized, new Response<string>("Você não tem permissão para executar essa ação."));
 
             return Ok(await Mediator.Send(query));
         }
