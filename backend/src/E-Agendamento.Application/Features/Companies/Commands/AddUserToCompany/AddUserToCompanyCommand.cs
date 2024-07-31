@@ -50,11 +50,11 @@ namespace E_Agendamento.Application.Features.Companies.Commands.AddUserToCompany
                 throw new ValidationException([new("CompanyId", "Você não pode inserir um usuário em uma empresa inativa no sistema.")]);
             }
 
-            bool userAlreadyInCompany = user.Companies.Select(x => x.Id).Contains(request.CompanyId);
-            if (userAlreadyInCompany)
-            {
-                throw new ValidationException([new("CompanyId", "O usuário já pertence a essa empresa.")]);
-            }
+            // bool userAlreadyInCompany = user.Companies.Select(x => x.Id).Contains(request.CompanyId);
+            // if (userAlreadyInCompany)
+            // {
+            //     throw new ValidationException([new("CompanyId", "O usuário já pertence a essa empresa.")]);
+            // }
 
             await _companyRepository.AddUserToCompanyAsync(company, user);
 
