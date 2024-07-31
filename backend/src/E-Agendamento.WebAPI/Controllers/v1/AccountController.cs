@@ -22,18 +22,19 @@ namespace E_Agendamento.WebAPI.Controllers.v1
             return Ok(await _accountService.AuthenticateAsync(request));
         }
 
+        [Authorize(Roles = "SuperAdmin")]
         [HttpPost("register/")]
         public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequest request)
         {
             string origin = Request.Headers.Origin;
-            return Ok(await _accountService.RegisterAsync(request, origin));
+            return StatusCode(201, await _accountService.RegisterAsync(request, origin));
         }
 
         [Authorize]
         [HttpGet("verify-token/")]
         public IActionResult VerifyToken()
         {
-            return Ok("Teste");
+            return Ok();
         }
 
         [Authorize]
