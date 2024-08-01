@@ -16,6 +16,9 @@ import Tag from 'primevue/tag'
 import Button from 'primevue/button'
 import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
+import IconField from 'primevue/iconfield'
+import InputIcon from 'primevue/inputicon'
+import InputText from 'primevue/inputtext'
 
 const toast = useToast();
 
@@ -89,7 +92,11 @@ onMounted(async () => {
           </div>
 
           <div class="mb-4">
-            <div class="flex items-center justify-end h-24 rounded">
+            <div class="flex items-center justify-end h-24 rounded gap-10">
+              <IconField>
+                <InputIcon class="pi pi-search" />
+                <InputText placeholder="Buscar empresa" />
+              </IconField>
               <Button @click="showCreateItemModalHandler">
                 Adicionar novo Item
               </Button>

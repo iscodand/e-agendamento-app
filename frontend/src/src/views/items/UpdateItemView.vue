@@ -14,6 +14,7 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
+import AutoComplete from 'primevue/autocomplete';
 
 const toast = useToast();
 
@@ -79,6 +80,16 @@ async function handleSubmit() {
         errorMessages.value.push(errors![0]);
     }
 }
+
+const filteredCategories = ref<Category[]>([]);
+
+const searchCategory = (event: { query: string }) => {
+    const query = event.query.toLowerCase();
+
+    filteredCategories.value = props.categories.filter((category: Category) =>
+        category.description.toLowerCase().includes(query)
+    );
+};
 </script>
 
 <template>
@@ -100,13 +111,9 @@ async function handleSubmit() {
 
             <div class="flex flex-col gap-2 mb-4">
                 <label for="categories" class="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
-                <!-- <select for=" categories"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                    v-model="localItem.categoryId">
-                    <option v-for="category in categories" :value="category.id">
-                        {{ category.description }}
-                    </option>
-                </select> -->
+                <AutoComplete v-model="localItem.categoryId" dropdown :suggestions="filteredCategories"
+                    @complete="searchCategory" optionLabel="description" />
+                <!-- :invalid="request.category === null" -->
             </div>
 
             <div class="flex flex-col gap-2 mb-4">
@@ -136,6 +143,7 @@ async function handleSubmit() {
             <ErrorMessageComponent :messages="errorMessages" />
 
             <div class="flex justify-end gap-3">
+                <Toast />
                 <Button size="small" @click="hideModalHandler" label="Cancelar" severity="danger" icon="pi pi-times" />
                 <Button size="small" label="Salvar" type="submit" severity="success" icon="pi pi-check" />
             </div>

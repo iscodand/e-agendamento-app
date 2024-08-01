@@ -5,6 +5,9 @@ import { useCompanyStore } from '@/stores/companies';
 import { BuildingOffice2Icon } from "@heroicons/vue/24/outline";
 import { onMounted, ref, type Ref } from 'vue';
 import NotFoundAnimation from '@/assets/animations/not-found/NotFoundAnimation.vue';
+import InputText from 'primevue/inputtext';
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
 
 //
 import DataTable from 'primevue/datatable'
@@ -73,7 +76,11 @@ function goToCompanyDetails(companyId: string): void {
                     </div>
 
                     <div class="mb-4">
-                        <div class="flex items-center justify-end h-24 rounded">
+                        <div class="flex items-center justify-end h-24 gap-10 ">
+                            <IconField>
+                                <InputIcon class="pi pi-search" />
+                                <InputText placeholder="Buscar empresa" />
+                            </IconField>
                             <Button @click="showCreateCompanyModalHandler">
                                 Adicionar nova empresa
                             </Button>
@@ -89,7 +96,7 @@ function goToCompanyDetails(companyId: string): void {
                             <NotFoundAnimation text="Não há empresas cadastradas." />
                         </template>
 
-                        <Column field="name" header="Nome" style="width: 21%"></Column>
+                        <Column field="name" header="Nome" style="width: 21%;"></Column>
                         <Column field="description" header="Descrição" style="width: 21%"></Column>
                         <Column field="cnpj" header="CNPJ" style="width: 21%"></Column>
                         <Column field="isAvailable" header="Situação" style="width: 21%">
