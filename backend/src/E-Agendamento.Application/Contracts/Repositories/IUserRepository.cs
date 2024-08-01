@@ -9,5 +9,6 @@ namespace E_Agendamento.Application.Contracts.Repositories
         public Task<ApplicationUser> GetWithCompaniesAsync(string userId);
         public Task<bool> UserInCompanyAsync(string userId, string companyId);
         public Task<IEnumerable<RetrieveUserResponse>> GetUsersByCompanyAsync(string companyId);
+        public Task<IEnumerable<ApplicationUser>> SearchByTermAsync(string searchTerm);
     }
 }

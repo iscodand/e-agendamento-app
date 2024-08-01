@@ -63,8 +63,21 @@ namespace E_Agendamento.Infrastructure.Data.Repositories
             return await _users.AsNoTracking()
                             .Include(x => x.UsersCompanies)
                             .ThenInclude(x => x.Company)
+                            .Where(x => x.Id == userId)
                             .FirstOrDefaultAsync()
                             .ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<ApplicationUser>> SearchByTermAsync(string searchTerm)
+        {
+            return await _context.Users
+                                .AsNoTracking()
+                                .Include(x => x.UsersCompanies)
+                                .Where(x => x.FullName.Contains(searchTerm) ||
+                                            x.UserName.Contains(searchTerm) ||
+                                            x.Email.Contains(searchTerm))
+                                .ToListAsync()
+                                .ConfigureAwait(false);
         }
 
         public async Task<bool> UserInCompanyAsync(string userId, string companyId)
