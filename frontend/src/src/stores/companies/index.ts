@@ -8,14 +8,16 @@ import { ref } from "vue";
 
 export const useCompanyStore = defineStore("companyStore", () => {
     const companies = ref<Company[]>([]);
+    const employees = ref<User[]>([]);
 
     const token = ref<string>();
-    
-    // TODO => separar employees de companies ???
-    const employees = ref<User[]>([]);
 
     function initCompanies(data: Company[]) {
         companies.value = data;
+    }
+
+    function initEmployees(data: User[]) {
+        employees.value = data;
     }
 
     function addNewCompany(company: Company) {
@@ -149,10 +151,71 @@ export const useCompanyStore = defineStore("companyStore", () => {
         };
     } 
 
+    async function dispatchSearchByEmployeeOnCompany(companyId: string, searchTerm: string): Promise<APIResponse<User[]>> {
+        try {
+            const {status, data} = await API.companies.searchByEmployeeInCompany(companyId, searchTerm, getToken());
+
+            if (status === 200) {
+                initEmployees(data.data!);
+
+                return {
+                    succeeded: true,
+                    data: data.data,
+                    status: status
+                }
+            }
+        } catch (error) {
+            const _error = error as AxiosError<{ Message: string, Errors?: string[] }>;
+
+            return {
+                succeeded: false,
+                status: _error.response?.status,
+                errors: _error.response?.data.Errors
+            };
+        }
+
+        return {
+            succeeded: false,
+            status: 400,
+            data: undefined
+        };
+    }
+
+    async function dispatchAddUserToCompany(companyId: string, userId: string): Promise<APIResponse<string>> {
+        try {
+            const { status } = await API.companies.addEmployeeToCompany(companyId, userId, getToken());
+        
+            if (status === 200) {
+    
+                return {
+                    succeeded: true,
+                    status: 200,
+                    data: ""
+                }
+            }
+        } catch (error) {
+            const _error = error as AxiosError<{ Message: string, Errors?: string[] }>;
+
+            return {
+                succeeded: false,
+                status: _error.response?.status,
+                errors: _error.response?.data.Errors
+            };
+        }
+
+        return {
+            succeeded: false,
+            status: 400,
+            data: "Erro ao proceder solicitação."
+        }
+    }
+
     return {
         dispatchGetCompanies,
+        dispatchSearchByEmployeeOnCompany,
         dispatchGetCompanyById,
         dispatchCreateCompany,
         dispatchUpdateCompany,
+        dispatchAddUserToCompany,
     }
 })

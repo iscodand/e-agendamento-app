@@ -31,6 +31,7 @@ import Button from 'primevue/button';
 import ToggleButton from 'primevue/togglebutton';
 import ErrorMessageComponent from '@/components/ui/error/ErrorMessageComponent.vue';
 import { useUserStore } from '@/stores/user';
+import AddExistentUserView from './AddExistentUserView.vue';
 
 const toast = useToast();
 const companyStore = useCompanyStore();
@@ -45,14 +46,22 @@ const company = ref<Company>({
     isActive: true
 });
 
-// show create item modal
+// show create user modal
 const showCreateNewUser = ref(false);
 function showCreateNewUserHandler() {
-    console.log("entoro")
     showCreateNewUser.value = true;
 }
 function hideCreateItemModalHandler() {
     showCreateNewUser.value = false;
+}
+
+// show add existent user modal
+const showAddExistentUser = ref(false);
+function showAddExistentUserModalHandler() {
+    showAddExistentUser.value = true;
+}
+function hideAddExistentUserModalHandler() {
+    showAddExistentUser.value = false;
 }
 
 const employees = ref<User[]>();
@@ -72,7 +81,7 @@ onMounted(async () => {
 
     if (succeeded) {
         loadEmployees();
-        company.value = data;
+        company.value = data!;
         request.value = {
             name: company.value.name,
             cnpj: company.value.cnpj,
@@ -125,7 +134,8 @@ function enableUpdate() {
 }
 
 function formatRoles(roles: string[]) {
-    return roles.join(", ");
+    if (roles)
+        return roles.join(", ");
 }
 
 </script>
@@ -258,8 +268,10 @@ function formatRoles(roles: string[]) {
                                         <InputText placeholder="Buscar Funcionário" />
                                     </IconField>
                                 </div>
-                                <div class="flex justify-end">
-                                    <Button label="Adicionar novo usuário" size="small"
+                                <div class="flex justify-end gap-4">
+                                    <Button label="Adicionar usuário existente" size="small" severity="info"
+                                        @click="showAddExistentUserModalHandler" />
+                                    <Button label="Registrar novo usuário" size="small"
                                         @click="showCreateNewUserHandler" />
                                 </div>
                             </div>
@@ -324,6 +336,9 @@ function formatRoles(roles: string[]) {
 
     <CreateEmployeeView :show="showCreateNewUser" :company-name="company.name" :company-id="company.id"
         @close="hideCreateItemModalHandler" />
+
+    <AddExistentUserView :show="showAddExistentUser" @close="hideAddExistentUserModalHandler" :company-id="company.id"
+        :external-exployees="employees!" />
 
     <!-- DIVIDIR EM TABS -->
 

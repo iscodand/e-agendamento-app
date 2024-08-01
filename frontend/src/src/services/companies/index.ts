@@ -43,10 +43,28 @@ async function getEmployeesByCompany(companyId: string, token: string) {
     })
 }
 
+async function searchByEmployeeInCompany(companyId: string, searchTerm: string, token: string) {
+    return await http.get<APIResponse<User[]>>(`companies/${companyId}/employees/search?search=${searchTerm}`, {
+        headers: {
+            Authorization: 'Bearer ' + token
+        }
+    })
+}
+
+async function addEmployeeToCompany(companyId: string, userId: string, token: string) {
+    return await http.post<APIResponse<string>>(`companies/${companyId}/add-user`, {"userId": userId}, {
+        headers: {
+            Authorization: 'Bearer ' + token
+        }
+    })
+}
+
 export default {
     getCompanies,
     getCompanyById,
     getEmployeesByCompany,
+    searchByEmployeeInCompany,
+    addEmployeeToCompany,
     createCompany,
     updateCompany
 }
