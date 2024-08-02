@@ -32,7 +32,6 @@ function hideModalHandler() {
 }
 
 const errorMessages = ref<string[]>([]);
-
 const itemStore = useItemStore();
 const localItem = ref<Item>({ ...props.item });
 watch(() => props.item, (newItem) => {
@@ -64,7 +63,7 @@ async function handleSubmit() {
         id: localItem.value.id,
         name: localItem.value.name,
         description: localItem.value.description,
-        categoryId: localItem.value.categoryId,
+        categoryId: localItem.value.category!.id,
         totalQuantity: localItem.value.totalQuantity,
         quantityAvailable: localItem.value.quantityAvailable,
         isAvailable: localItem.value.isAvailable
@@ -73,7 +72,7 @@ async function handleSubmit() {
     const { succeeded, errors } = await itemStore.dispatchUpdateItem(input);
 
     if (succeeded) {
-        emit('submit', { name: localItem.value.name });
+        emit('submit');
         hideModalHandler();
         toast.add({ severity: 'success', summary: 'Sucesso', detail: 'Item atualizado com sucesso.', life: 3000 });
     } else {
@@ -82,7 +81,6 @@ async function handleSubmit() {
 }
 
 const filteredCategories = ref<Category[]>([]);
-
 const searchCategory = (event: { query: string }) => {
     const query = event.query.toLowerCase();
 
@@ -111,9 +109,8 @@ const searchCategory = (event: { query: string }) => {
 
             <div class="flex flex-col gap-2 mb-4">
                 <label for="categories" class="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
-                <AutoComplete v-model="localItem.categoryId" dropdown :suggestions="filteredCategories"
+                <AutoComplete v-model="localItem.category" dropdown :suggestions="filteredCategories"
                     @complete="searchCategory" optionLabel="description" />
-                <!-- :invalid="request.category === null" -->
             </div>
 
             <div class="flex flex-col gap-2 mb-4">
