@@ -22,6 +22,7 @@ import InputText from 'primevue/inputtext';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 import Chip from 'primevue/chip';
+import Textarea from 'primevue/textarea';
 
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -200,8 +201,8 @@ function formatRoles(roles: string[]) {
                                         <label for="companyDescription">
                                             Descrição
                                         </label>
-                                        <InputText id="companyDescription" v-model="request.description"
-                                            :disabled=updateDisabled />
+                                        <Textarea id="companyDescription" v-model="request.description"
+                                            :disabled=updateDisabled :rows="1" />
                                     </div>
                                 </div>
 
@@ -245,7 +246,7 @@ function formatRoles(roles: string[]) {
                             <hr>
 
                             <section id="cards">
-                                <div class="flex gap-8">
+                                <div class="flex items-center col-span-3 gap-8">
                                     <div class="mt-10">
                                         <CardComponent title="Agendamentos em Aberto" :stat=3
                                             icon="pi-calendar-clock" />
@@ -286,10 +287,10 @@ function formatRoles(roles: string[]) {
                                             :action="showCreateNewUserHandler" />
                                     </template>
 
-                                    <Column field="fullName" header="Nome" style="width: 25%"></Column>
-                                    <Column field="email" header="E-mail" style="width: 25%" class="truncate">
+                                    <Column field="fullName" header="Nome" style="width: 20%"></Column>
+                                    <Column field="email" header="E-mail" style="width: 20%" class="truncate">
                                     </Column>
-                                    <Column field="isActive" header="Ativo" style="width: 25%">
+                                    <Column field="isActive" header="Ativo" style="width: 20%">
                                         <template #body="{ data }">
                                             <div v-if="data.isActive">
                                                 <Tag value="Ativo" severity="success" />
@@ -299,10 +300,18 @@ function formatRoles(roles: string[]) {
                                             </div>
                                         </template>
                                     </Column>
-                                    <Column field="roles" header="Cargos" style="width: 25%">
+                                    <Column field="roles" header="Cargos" style="width: 20%">
                                         <template #body="slotProps">
                                             <Tag class="py-0 pl-0 pr-4" :value="formatRoles(slotProps.data.roles)"
                                                 severity="info" />
+                                        </template>
+                                    </Column>
+                                    <Column field="actions" header="" style="width: 10%">
+                                        <template #body="{ data }">
+                                            <div class="flex gap-4">
+                                                <Button @click="" size="small" label="Ver perfil" severity="info"
+                                                    icon="pi pi-info-circle" />
+                                            </div>
                                         </template>
                                     </Column>
                                 </DataTable>
