@@ -96,10 +96,12 @@ function goToCompanyDetails(companyId: string): void {
                             <NotFoundAnimation text="Não há empresas cadastradas." />
                         </template>
 
-                        <Column field="name" header="Nome" style="width: 21%;"></Column>
-                        <Column field="description" header="Descrição" style="width: 21%"></Column>
-                        <Column field="cnpj" header="CNPJ" style="width: 21%"></Column>
-                        <Column field="isAvailable" header="Situação" style="width: 21%">
+                        <Column field="name" header="Nome" style="width: 20%;"></Column>
+                        <Column field="description" header="Descrição" style="width: 20%"
+                            class="text-clip overflow-hidden text-justify">
+                        </Column>
+                        <Column field="cnpj" header="CNPJ" style="width: 20%"></Column>
+                        <Column field="isAvailable" header="Situação" style="width: 15%">
                             <template #body="{ data }">
                                 <div v-if="data.isActive">
                                     <Tag value="Ativa" severity="success" />
@@ -109,7 +111,7 @@ function goToCompanyDetails(companyId: string): void {
                                 </div>
                             </template>
                         </Column>
-                        <Column>
+                        <Column style="width: 10%">
                             <template #body="{ data }">
                                 <Button @click="goToCompanyDetails(data.id)" size="small" label="Detalhes"
                                     severity="info" icon="pi pi-info-circle" />

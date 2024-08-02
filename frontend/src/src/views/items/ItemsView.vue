@@ -113,10 +113,10 @@ onMounted(async () => {
                 :action=showCreateItemModalHandler />
             </template>
 
-            <Column field="name" header="Nome" style="width: 22%"></Column>
-            <Column field="description" header="Descrição" style="width: 22%" class="truncate"></Column>
-            <Column field="quantityAvailable" header="Qtd. Disponível" style="width: 22%"></Column>
-            <Column field="isAvailable" header="Disponível" style="width: 23%">
+            <Column field="name" header="Nome" style="width: 20%"></Column>
+            <Column field="description" header="Descrição" style="width: 20%" class="truncate"></Column>
+            <Column field="quantityAvailable" header="Qtd. Disponível" style="width: 20%"></Column>
+            <Column field="isAvailable" header="Disponível" style="width: 15%">
               <template #body="{ data }">
                 <div v-if="data.isAvailable">
                   <Tag value="Disponível" severity="success" />
@@ -126,7 +126,7 @@ onMounted(async () => {
                 </div>
               </template>
             </Column>
-            <Column>
+            <Column style="width: 10%">
               <template #body="{ data }">
                 <div class="flex gap-4">
                   <Button @click="showUpdateItemModalHandler(data)" size="small" label="Editar" severity="info"
