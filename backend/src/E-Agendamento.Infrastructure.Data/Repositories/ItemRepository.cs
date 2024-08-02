@@ -17,13 +17,14 @@ namespace E_Agendamento.Infrastructure.Data.Repositories
 
         public async Task<IEnumerable<Item>> GetByCompanyPagedAsync(string companyId, int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
-            return await _items
-                       .Where(x => x.CompanyId == companyId)
-                       .Skip((pageNumber - 1) * pageSize)
-                       .Take(pageSize)
-                       .AsNoTracking()
-                       .ToListAsync(cancellationToken: cancellationToken)
-                       .ConfigureAwait(false);
+            return await _items.AsNoTracking()
+                            .Include(x => x.Category)
+                            .Where(x => x.CompanyId == companyId)
+                            .Skip((pageNumber - 1) * pageSize)
+                            .Take(pageSize)
+                            .AsNoTracking()
+                            .ToListAsync(cancellationToken: cancellationToken)
+                            .ConfigureAwait(false);
         }
 
         public async Task<bool> IsUniqueAsync(string name, string companyId, CancellationToken cancellationToken, string itemIdToComparison = "")
