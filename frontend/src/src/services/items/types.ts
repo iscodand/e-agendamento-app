@@ -1,8 +1,11 @@
+import type { Category } from "../categories/types";
+
 export type Item = {
     id: string,
     name: string,
     description: string,
     categoryId: string,
+    category?: Category, 
     totalQuantity: number,
     quantityAvailable: number,
     isAvailable: boolean
