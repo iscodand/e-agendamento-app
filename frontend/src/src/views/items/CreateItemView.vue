@@ -25,18 +25,10 @@ const showDialog = computed({
 
 const errorMessages = ref<string[]>([]);
 
-// temporario => preciso definir isso na request (CreateItemInput)
-interface Request {
-    name: string;
-    description: string;
-    category: Category | undefined;
-    totalQuantity: number;
-    quantityAvailable: number;
-}
-
-let request = ref<Request>({
+let request = ref<InputCreateItem>({
     name: '',
     description: '',
+    categoryId: '',
     category: undefined,
     totalQuantity: 0,
     quantityAvailable: 0,
@@ -46,6 +38,7 @@ function hideModalHandler() {
     request = ref({
         name: '',
         description: '',
+        categoryId: '',
         category: undefined,
         totalQuantity: 0,
         quantityAvailable: 0,

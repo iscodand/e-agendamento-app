@@ -21,7 +21,6 @@ export const useCompanyStore = defineStore("companyStore", () => {
     }
 
     function addNewCompany(company: Company) {
-        console.log(companies.value.length)
         if (companies.value.length < 10)
             companies.value.push(company);
     }

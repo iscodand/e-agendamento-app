@@ -5,17 +5,8 @@ import { useCompanyStore } from '@/stores/companies';
 import { BuildingOffice2Icon } from "@heroicons/vue/24/outline";
 import { onMounted, ref, type Ref } from 'vue';
 import NotFoundAnimation from '@/assets/animations/not-found/NotFoundAnimation.vue';
-import InputText from 'primevue/inputtext';
-import IconField from 'primevue/iconfield';
-import InputIcon from 'primevue/inputicon';
-
-//
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import Tag from 'primevue/tag'
-import Button from 'primevue/button'
-import Paginator from 'primevue/paginator';
 import router from '@/router';
+import type { RequestParameters } from '@/services/types';
 
 const companyStore = useCompanyStore();
 const companies: any = ref([]);
@@ -30,7 +21,7 @@ function hideCreateCompanyModalHandler() {
     showCreateCompanyModal.value = false;
 }
 
-const parameters = ref({
+const parameters = ref<RequestParameters>({
     pageSize: 8,
     pageNumber: 1
 });

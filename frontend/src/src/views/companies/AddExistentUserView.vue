@@ -1,23 +1,11 @@
 <script setup lang="ts">
 
 import { computed, ref } from 'vue';
-
-import Dialog from 'primevue/dialog';
-import Button from 'primevue/button';
-import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
-import IconField from 'primevue/iconfield';
-import InputIcon from 'primevue/inputicon';
-import InputText from 'primevue/inputtext';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
 import NotFoundAnimation from '@/assets/animations/not-found/NotFoundAnimation.vue';
-import Tag from 'primevue/tag';
-
 import { useCompanyStore } from '@/stores/companies';
 import type { User } from '@/services/user/types';
-
-import { debounce } from 'lodash'
+import SearchComponent from '@/components/ui/search/SearchComponent.vue';
 
 const toast = useToast();
 const companyStore = useCompanyStore();
@@ -36,7 +24,7 @@ function hideModalHandler() {
     emit('close')
 }
 
-async function searchByUser() {
+async function searchByUser(): Promise<void> {
     const { succeeded, data } = await companyStore.dispatchSearchByEmployeeOnCompany(props.companyId, searchTerm.value);
 
     if (succeeded) {
@@ -46,12 +34,7 @@ async function searchByUser() {
     }
 }
 
-// Função debounce para limitar as chamadas de busca
-const onInput = debounce(() => {
-    searchByUser();
-}, 500);
-
-async function addUserToCompany(userId: string) {
+async function addUserToCompany(userId: string): Promise<void> {
     const { succeeded } = await companyStore.dispatchAddUserToCompany(props.companyId, userId)
 
     if (succeeded) {
@@ -71,13 +54,7 @@ const showDialog = computed({
     <div>
         <Dialog v-model:visible="showDialog" modal header="Adicionar usuário existente" :style="{ width: '70rem' }">
             <div class="flex col-span-2 m-4 items-center justify-center mb-10">
-                <IconField>
-                    <div class="flex gap-3">
-                        <InputIcon class="pi pi-search" />
-                        <InputText v-model="searchTerm" @input="onInput" placeholder="Buscar usuário" />
-                        <Button size="small" label="Cancelar" @click="hideModalHandler" severity="danger" />
-                    </div>
-                </IconField>
+                <SearchComponent v-model:searchTerm="searchTerm" :searchMethod="searchByUser" />
             </div>
 
             <div class="relative overflow-x-auto shadow-md sm:rounded-lg">

@@ -16,6 +16,10 @@ export const useItemStore = defineStore("itemStore", () => {
         items.value.push(item);
     }
 
+    function getToken(): string {
+        return localStorage.getItem('token') || '';
+    }
+
     function removeItem(itemId: string) {
         const idx = items.value.findIndex(i => i.id === itemId);
         if (idx === -1) return;
@@ -28,6 +32,32 @@ export const useItemStore = defineStore("itemStore", () => {
             if (status === 200 && data.data) {
                 initItems(data.data);
 
+                return {
+                    succeeded: true,
+                    data: data.data,
+                    status: status,
+                };
+            }
+        } catch (error) {
+            const _error = error as AxiosError<string>;
+            return {
+                succeeded: false,
+                status: _error.response?.status,
+                data: undefined
+            };
+        }
+
+        return {
+            succeeded: false,
+            status: 400,
+            data: undefined
+        };
+    }
+
+    async function dispatchSearchItems(searchTerm: string): Promise<APIResponse<Item[]>> {
+        try {
+            const { status, data } = await API.items.searchByItem(searchTerm, getToken());
+            if (status === 200 && data.data) {
                 return {
                     succeeded: true,
                     data: data.data,
@@ -151,6 +181,7 @@ export const useItemStore = defineStore("itemStore", () => {
         dispatchGetItems,
         dispatchCreateItem,
         dispatchUpdateItem,
-        dispatchDeleteItem
+        dispatchDeleteItem,
+        dispatchSearchItems
     };
 });

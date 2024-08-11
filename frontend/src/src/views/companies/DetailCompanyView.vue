@@ -9,30 +9,10 @@ import type { User } from '@/services/user/types';
 import CardComponent from '@/components/ui/dashboard/CardComponent.vue';
 import NotFoundAnimation from '@/assets/animations/not-found/NotFoundAnimation.vue';
 import CreateEmployeeView from '../employees/CreateEmployeeView.vue';
-
-//
-import Tab from 'primevue/tab';
-import Tabs from 'primevue/tabs';
-import TabList from 'primevue/tablist';
-import TabPanel from 'primevue/tabpanel';
-import TabPanels from 'primevue/tabpanels';
-import IconField from 'primevue/iconfield';
-import InputIcon from 'primevue/inputicon';
-import InputText from 'primevue/inputtext';
-import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
-import Chip from 'primevue/chip';
-import Textarea from 'primevue/textarea';
-
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-
-import Tag from 'primevue/tag';
-import Button from 'primevue/button';
-import ToggleButton from 'primevue/togglebutton';
-import ErrorMessageComponent from '@/components/ui/error/ErrorMessageComponent.vue';
 import { useUserStore } from '@/stores/user';
 import AddExistentUserView from './AddExistentUserView.vue';
+import ErrorMessageComponent from '@/components/ui/error/ErrorMessageComponent.vue';
 
 const toast = useToast();
 const companyStore = useCompanyStore();

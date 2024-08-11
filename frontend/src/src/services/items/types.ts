@@ -12,13 +12,12 @@ export type Item = {
 }
 
 export type InputCreateItem = {
-    id?: string,
     name: string,
     description: string,
-    categoryId: string,
+    categoryId: string, 
+    category?: Category | undefined,
     totalQuantity: number,
-    quantityAvailable: number,
-    companyId?: string
+    quantityAvailable: number
 };
 
 export type InputUpdateItem = {
