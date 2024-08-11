@@ -36,5 +36,15 @@ namespace E_Agendamento.Infrastructure.Data.Repositories
                             .AnyAsync(cancellationToken)
                             .ConfigureAwait(false);
         }
+
+        public async Task<IEnumerable<Item>> SearchByItemAsync(string searchTerm, string companyId)
+        {
+            return await _items.AsNoTracking()
+                                .Include(x => x.Category)
+                                .Where(x => x.Name.Contains(searchTerm))
+                                .Where(x => x.CompanyId == companyId)
+                                .ToListAsync()
+                                .ConfigureAwait(false);
+        }
     }
 }
