@@ -12,7 +12,6 @@ namespace E_Agendamento.Application.Features.Schedules.Queries.GetSchedulesByUse
         // must be UserResponse
         public string RequestedBy { get; set; }
 
-        // must be UserResponse
         public string ConfirmedBy { get; set; }
         public DateTime StartedAt { get; set; }
         public DateTime EndAt { get; set; }

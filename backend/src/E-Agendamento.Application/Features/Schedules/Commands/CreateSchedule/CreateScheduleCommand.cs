@@ -19,7 +19,7 @@ namespace E_Agendamento.Application.Features.Schedules.Commands.CreateSchedule
     {
         public string ItemId { get; set; }
         public string Observation { get; set; }
-        
+
         [JsonIgnore]
         public string Id { get; set; }
         [JsonIgnore]
