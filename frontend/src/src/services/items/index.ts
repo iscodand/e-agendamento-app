@@ -10,6 +10,14 @@ async function getItems() {
     });
 }
 
+async function searchByItem(searchTerm: string, token: string) {
+    return await http.get<APIResponse<Item[]>>(`items/search?search=${searchTerm}`, {
+        headers: {
+            Authorization: 'Bearer ' + token
+        }
+    })
+}
+
 async function createItem(input: InputCreateItem) {
     return await http.post<APIResponse<Item>>("items/", input, {
         headers: {
@@ -38,5 +46,6 @@ export default {
     getItems,
     createItem,
     updateItem,
-    deleteItem
+    deleteItem,
+    searchByItem
 }

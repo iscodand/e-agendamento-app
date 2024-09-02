@@ -1,9 +1,9 @@
 using E_Agendamento.Application.Features.Categories.Queries.GetCategoryById;
 using E_Agendamento.Domain.Entities;
 
-namespace E_Agendamento.Application.Features.Items.Queries.GetAllItems
+namespace E_Agendamento.Application.Features.Items.Queries.Common
 {
-    public class GetAllItemsViewModel
+    public class GetItemViewModel
     {
         public string Id { get; set; }
         public string Name { get; set; }
@@ -15,9 +15,9 @@ namespace E_Agendamento.Application.Features.Items.Queries.GetAllItems
         public bool IsAvailable { get; set; }
         public string CompanyId { get; set; }
 
-        public static IEnumerable<GetAllItemsViewModel> Map(IEnumerable<Item> items)
+        public static IEnumerable<GetItemViewModel> Map(IEnumerable<Item> items)
         {
-            return items.Select(item => new GetAllItemsViewModel
+            return items.Select(item => new GetItemViewModel
             {
                 Id = item.Id,
                 Name = item.Name,

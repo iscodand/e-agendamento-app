@@ -23,9 +23,9 @@ namespace E_Agendamento.Infrastructure.Data
             #region Repositories
 
             //services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IItemRepository, ItemRepository>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
-            services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserRoleRepository, UserRoleRepository>();
             services.AddScoped<IScheduleRepository, ScheduleRepository>();

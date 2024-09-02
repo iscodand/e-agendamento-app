@@ -1,8 +1,10 @@
 export type User = {
+    id?: string,
     userName: string,
     fullName: string,
     email: string,
-    isActive: boolean
+    isActive: boolean,
+    alreadyInCompany?: boolean,
     roles: string[],
     company: string
 }

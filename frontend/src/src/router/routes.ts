@@ -6,7 +6,6 @@ export default async function routes(
   from: RouteLocationNormalized,
   next: NavigationGuardNext
 ) {
-  console.log('to.meta.auth:', to.meta.auth);  // Verificação
   if (to.meta?.auth) {
     const useAuth = authStore();
     const isAuthenticated = await useAuth.isAuthenticated;

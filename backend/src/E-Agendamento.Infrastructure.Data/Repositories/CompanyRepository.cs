@@ -20,10 +20,8 @@ namespace E_Agendamento.Infrastructure.Data.Repositories
         public async Task<bool> AddUserToCompanyAsync(Company company, ApplicationUser user)
         {
             UsersCompanies userCompany = UsersCompanies.Create(user.Id, company.Id);
-            await _context.UsersCompanies.AddAsync(userCompany);
-
-            // TODO => melhorar esse lixo
-            return true;
+            await _context.AddAsync(userCompany);
+            return await _context.SaveChangesAsync() == 1;
         }
 
         public async Task<bool> ExistsByCNPJAsync(string cnpj, string companyToUpdateId = "")

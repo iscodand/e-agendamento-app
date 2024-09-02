@@ -22,9 +22,6 @@ namespace E_Agendamento.WebAPI.Controllers.v1
                 CompanyId = AuthenticatedUser.CompanyId
             };
 
-            if (query.CompanyId is null)
-                return StatusCode(StatusCodes.Status401Unauthorized, new Response<string>("Você não tem permissão para executar essa ação."));
-
             return Ok(await Mediator.Send(query));
         }
 

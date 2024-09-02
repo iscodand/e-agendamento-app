@@ -2,6 +2,7 @@ using E_Agendamento.Application.Features.Items.Commands;
 using E_Agendamento.Application.Features.Items.Commands.DeleteItemById;
 using E_Agendamento.Application.Features.Items.Commands.UpdateItemById;
 using E_Agendamento.Application.Features.Items.Queries.GetAllItems;
+using E_Agendamento.Application.Features.Items.Queries.SearchByItem;
 using E_Agendamento.WebAPI.Controllers.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,18 @@ namespace E_Agendamento.WebAPI.Controllers.v1
                 PageSize = filter.PageSize,
                 PageNumber = filter.PageNumber,
                 CompanyId = AuthenticatedUser.CompanyId
+            };
+
+            return Ok(await Mediator.Send(query));
+        }
+
+        [HttpGet("search/")]
+        public async Task<IActionResult> Search([FromQuery] string search)
+        {
+            SearchByItemQuery query = new()
+            {
+                CompanyId = AuthenticatedUser.CompanyId,
+                SearchTerm = search
             };
 
             return Ok(await Mediator.Send(query));

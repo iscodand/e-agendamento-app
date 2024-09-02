@@ -95,8 +95,10 @@ onMounted(async () => {
                                 buttonLabel="Clique aqui para adicionar" :action="showCreateCategoryDialogHandler" />
                         </template>
 
-                        <Column field="description" header="Descrição" style="width: 50%" class="truncate"></Column>
-                        <Column>
+                        <Column style="width: 1%"></Column>
+                        <Column field="description" header="Descrição" style="width: 25%" class="truncate"></Column>
+                        <Column header="Itens cadastrados" style="width: 25%"></Column>
+                        <Column style="width: 3%">
                             <template #body="{ data }">
                                 <div class="flex gap-3">
                                     <Button @click="showUpdateCategoryDialogHandler(data)" size="small" label="Editar"

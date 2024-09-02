@@ -22,7 +22,6 @@ namespace E_Agendamento.Application.Features.Companies.Queries.GetCompanyById
         public async Task<Response<GetCompanyViewModel>> Handle(GetCompanyByIdQuery request, CancellationToken cancellationToken)
         {
             Company company = await _companyRepository.GetByIdAsync(request.Id);
-
             if (company is null)
             {
                 throw new KeyNotFoundException();

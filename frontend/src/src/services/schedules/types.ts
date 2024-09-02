@@ -1,3 +1,4 @@
+import type { Item } from "../items/types"
 import type { ApplicationUser } from "../user/types"
 
 export type Schedule = {
@@ -12,6 +13,7 @@ export type Schedule = {
 }
 
 export type InputCreateSchedule = {
+    item?: Item,
     itemId: string,
     observation: string
 }

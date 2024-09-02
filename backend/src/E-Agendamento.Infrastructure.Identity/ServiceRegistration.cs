@@ -63,13 +63,13 @@ namespace E_Agendamento.Infrastructure.Identity
                     };
                     o.Events = new JwtBearerEvents()
                     {
-                        OnAuthenticationFailed = c =>
+                        OnAuthenticationFailed = context =>
                         {
-                            c.NoResult();
-                            c.Response.StatusCode = 500;
-                            c.Response.ContentType = "text/plain";
-                            var result = JsonConvert.SerializeObject(new Response<string>(c.Exception.ToString()));
-                            return c.Response.WriteAsync(result);
+                            context.NoResult();
+                            context.Response.StatusCode = 500;
+                            context.Response.ContentType = "text/plain";
+                            var result = JsonConvert.SerializeObject(new Response<string>(context.Exception.ToString()));
+                            return context.Response.WriteAsync(result);
                         },
                         OnChallenge = context =>
                         {

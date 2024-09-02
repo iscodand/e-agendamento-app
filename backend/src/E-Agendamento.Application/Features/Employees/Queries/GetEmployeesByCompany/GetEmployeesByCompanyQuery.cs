@@ -38,7 +38,6 @@ namespace E_Agendamento.Application.Features.Employees.Queries.GetEmployeesByCom
             }
 
             IEnumerable<RetrieveUserResponse> users = await _userRepository.GetUsersByCompanyAsync(request.CompanyId);
-
             IEnumerable<GetEmployeesByQueryViewModel> response = GetEmployeesByQueryViewModel.Map(users);
 
             return new("Usuários recuperados com sucesso.", response);

@@ -9,28 +9,10 @@ import type { User } from '@/services/user/types';
 import CardComponent from '@/components/ui/dashboard/CardComponent.vue';
 import NotFoundAnimation from '@/assets/animations/not-found/NotFoundAnimation.vue';
 import CreateEmployeeView from '../employees/CreateEmployeeView.vue';
-
-//
-import Tab from 'primevue/tab';
-import Tabs from 'primevue/tabs';
-import TabList from 'primevue/tablist';
-import TabPanel from 'primevue/tabpanel';
-import TabPanels from 'primevue/tabpanels';
-import IconField from 'primevue/iconfield';
-import InputIcon from 'primevue/inputicon';
-import InputText from 'primevue/inputtext';
-import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
-import Chip from 'primevue/chip';
-
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-
-import Tag from 'primevue/tag';
-import Button from 'primevue/button';
-import ToggleButton from 'primevue/togglebutton';
-import ErrorMessageComponent from '@/components/ui/error/ErrorMessageComponent.vue';
 import { useUserStore } from '@/stores/user';
+import AddExistentUserView from './AddExistentUserView.vue';
+import ErrorMessageComponent from '@/components/ui/error/ErrorMessageComponent.vue';
 
 const toast = useToast();
 const companyStore = useCompanyStore();
@@ -45,14 +27,22 @@ const company = ref<Company>({
     isActive: true
 });
 
-// show create item modal
+// show create user modal
 const showCreateNewUser = ref(false);
 function showCreateNewUserHandler() {
-    console.log("entoro")
     showCreateNewUser.value = true;
 }
 function hideCreateItemModalHandler() {
     showCreateNewUser.value = false;
+}
+
+// show add existent user modal
+const showAddExistentUser = ref(false);
+function showAddExistentUserModalHandler() {
+    showAddExistentUser.value = true;
+}
+function hideAddExistentUserModalHandler() {
+    showAddExistentUser.value = false;
 }
 
 const employees = ref<User[]>();
@@ -72,7 +62,7 @@ onMounted(async () => {
 
     if (succeeded) {
         loadEmployees();
-        company.value = data;
+        company.value = data!;
         request.value = {
             name: company.value.name,
             cnpj: company.value.cnpj,
@@ -125,7 +115,8 @@ function enableUpdate() {
 }
 
 function formatRoles(roles: string[]) {
-    return roles.join(", ");
+    if (roles)
+        return roles.join(", ");
 }
 
 </script>
@@ -190,8 +181,8 @@ function formatRoles(roles: string[]) {
                                         <label for="companyDescription">
                                             Descrição
                                         </label>
-                                        <InputText id="companyDescription" v-model="request.description"
-                                            :disabled=updateDisabled />
+                                        <Textarea id="companyDescription" v-model="request.description"
+                                            :disabled=updateDisabled :rows="1" />
                                     </div>
                                 </div>
 
@@ -235,7 +226,7 @@ function formatRoles(roles: string[]) {
                             <hr>
 
                             <section id="cards">
-                                <div class="flex gap-8">
+                                <div class="flex items-center col-span-3 gap-8">
                                     <div class="mt-10">
                                         <CardComponent title="Agendamentos em Aberto" :stat=3
                                             icon="pi-calendar-clock" />
@@ -258,8 +249,10 @@ function formatRoles(roles: string[]) {
                                         <InputText placeholder="Buscar Funcionário" />
                                     </IconField>
                                 </div>
-                                <div class="flex justify-end">
-                                    <Button label="Adicionar novo usuário" size="small"
+                                <div class="flex justify-end gap-4">
+                                    <Button label="Adicionar usuário existente" size="small" severity="info"
+                                        @click="showAddExistentUserModalHandler" />
+                                    <Button label="Registrar novo usuário" size="small"
                                         @click="showCreateNewUserHandler" />
                                 </div>
                             </div>
@@ -274,10 +267,10 @@ function formatRoles(roles: string[]) {
                                             :action="showCreateNewUserHandler" />
                                     </template>
 
-                                    <Column field="fullName" header="Nome" style="width: 25%"></Column>
-                                    <Column field="email" header="E-mail" style="width: 25%" class="truncate">
+                                    <Column field="fullName" header="Nome" style="width: 20%"></Column>
+                                    <Column field="email" header="E-mail" style="width: 20%" class="truncate">
                                     </Column>
-                                    <Column field="isActive" header="Ativo" style="width: 25%">
+                                    <Column field="isActive" header="Ativo" style="width: 20%">
                                         <template #body="{ data }">
                                             <div v-if="data.isActive">
                                                 <Tag value="Ativo" severity="success" />
@@ -287,10 +280,18 @@ function formatRoles(roles: string[]) {
                                             </div>
                                         </template>
                                     </Column>
-                                    <Column field="roles" header="Cargos" style="width: 25%">
+                                    <Column field="roles" header="Cargos" style="width: 20%">
                                         <template #body="slotProps">
                                             <Tag class="py-0 pl-0 pr-4" :value="formatRoles(slotProps.data.roles)"
                                                 severity="info" />
+                                        </template>
+                                    </Column>
+                                    <Column field="actions" header="" style="width: 10%">
+                                        <template #body="{ data }">
+                                            <div class="flex gap-4">
+                                                <Button @click="" size="small" label="Ver perfil" severity="info"
+                                                    icon="pi pi-info-circle" />
+                                            </div>
                                         </template>
                                     </Column>
                                 </DataTable>
@@ -324,6 +325,9 @@ function formatRoles(roles: string[]) {
 
     <CreateEmployeeView :show="showCreateNewUser" :company-name="company.name" :company-id="company.id"
         @close="hideCreateItemModalHandler" />
+
+    <AddExistentUserView :show="showAddExistentUser" @close="hideAddExistentUserModalHandler" :company-id="company.id"
+        :external-exployees="employees!" />
 
     <!-- DIVIDIR EM TABS -->
 
