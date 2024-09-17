@@ -1,4 +1,5 @@
 using E_Agendamento.Domain.Entities.Common;
+using E_Agendamento.Domain.Enums;
 
 namespace E_Agendamento.Domain.Entities
 {
@@ -26,6 +27,13 @@ namespace E_Agendamento.Domain.Entities
             StartAt = DateTime.Now;
             EndAt = DateTime.MinValue;
             ConfirmedById = null;
+            Status = nameof(ScheduleStatus.Pending);
+        }
+
+        public Schedule CancelSchedule()
+        {
+            this.Status = nameof(ScheduleStatus.Canceled);
+            return this;
         }
     }
 }
