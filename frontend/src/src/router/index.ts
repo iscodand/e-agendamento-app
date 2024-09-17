@@ -25,6 +25,14 @@ const router = createRouter({
             }
         },
         {
+            path: '/agendamentos',
+            name: 'schedules-by-company',
+            component: () => import('../views/schedules/CompanySchedulesView.vue'),
+            meta: {
+                auth: true
+            }
+        },
+        {
             path: '/items',
             name: 'item',
             component: () => import('../views/items/ItemsView.vue'),
