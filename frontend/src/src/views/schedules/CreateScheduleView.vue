@@ -6,6 +6,7 @@ import { computed, ref, type Ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import type { Item } from '@/services/items/types';
 import { useItemStore } from '@/stores/items';
+import schedules from '@/services/schedules';
 
 const props = defineProps<{ show: boolean }>();
 
@@ -20,7 +21,9 @@ const errorMessages: Ref<string[]> = ref<string[]>([]);
 let request = ref<InputCreateSchedule>({
     item: undefined,
     itemId: '',
-    observation: ''
+    observation: '',
+    startAt: new Date(),
+    endAt: new Date()
 })
 
 const emit = defineEmits(['close', 'submit', 'create:show']);
@@ -31,11 +34,6 @@ const showDialog = computed({
 });
 
 function hideModalHandler() {
-    request = ref<InputCreateSchedule>({
-        item: undefined,
-        itemId: '',
-        observation: ''
-    })
     emit('close');
 }
 
@@ -62,12 +60,25 @@ async function searchItems(event: { query: string }) {
 async function handleSubmit() {
     const input = ref<InputCreateSchedule>({
         itemId: request.value.item!.id,
-        observation: request.value.observation
+        observation: request.value.observation,
+        startAt: request.value.startAt,
+        endAt: request.value.endAt
     })
+
+    if (!request.value.item) {
+        toast.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'Por favor, selecione um item.',
+            life: 3000
+        });
+        return;
+    }
 
     const { succeeded, errors } = await scheduleStore.dispatchCreateSchedule(input.value);
 
     if (succeeded) {
+        hideModalHandler();
         toast.add({
             severity: 'success',
             summary: 'Sucesso',
@@ -83,8 +94,7 @@ async function handleSubmit() {
 </script>
 
 <template>
-    <Dialog v-model:visible="showDialog" @hide="hideModalHandler" modal header="Agendar item"
-        :style="{ width: '30rem' }">
+    <Dialog v-model:visible="showDialog" modal header="Agendar item" :style="{ width: '30rem' }">
         <form @submit.prevent="handleSubmit">
             <div class="flex flex-col gap-2 mb-4">
                 <label for="scheduleObservation">
@@ -102,9 +112,24 @@ async function handleSubmit() {
                     optionLabel="description" :invalid="request.itemId === null" />
             </div>
 
+            <div class="flex flex-col gap-2 mb-4">
+                <label for="startAt">
+                    Data do Agendamento
+                </label>
+                <DatePicker v-model="request.startAt" showIcon fluid iconDisplay="input" />
+            </div>
+
+            <div class="flex flex-col gap-2 mb-4">
+                <label for="endAt">
+                    Data de Encerramento
+                </label>
+                <DatePicker v-model="request.endAt" showIcon fluid iconDisplay="input" />
+            </div>
+
             <ErrorMessageComponent :messages="errorMessages" />
 
             <div class="flex justify-end gap-3">
+                <Toast />
                 <Button size="small" @click="hideModalHandler" label="Cancelar" severity="danger" icon="pi pi-times" />
                 <Button size="small" label="Salvar" type="submit" severity="success" icon="pi pi-check" />
             </div>
