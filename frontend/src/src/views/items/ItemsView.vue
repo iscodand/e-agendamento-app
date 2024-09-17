@@ -8,17 +8,7 @@ import CreateItemView from './CreateItemView.vue';
 import UpdateItemView from './UpdateItemView.vue';
 import { TagIcon } from '@heroicons/vue/24/outline'
 import NotFoundAnimation from '@/assets/animations/not-found/NotFoundAnimation.vue'
-
-// PrimeVue
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import Tag from 'primevue/tag'
-import Button from 'primevue/button'
-import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
-import InputText from 'primevue/inputtext'
 
 const toast = useToast();
 

@@ -4,13 +4,7 @@ import { useItemStore } from '@/stores/items'
 import type { InputCreateItem } from '@/services/items/types';
 import ErrorMessageComponent from '@/components/ui/error/ErrorMessageComponent.vue';
 
-//
-import AutoComplete from 'primevue/autocomplete';
 import type { Category } from '@/services/categories/types';
-import InputText from 'primevue/inputtext';
-import InputNumber from 'primevue/inputnumber';
-import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
 
 const props = defineProps<{ show: boolean, categories: Category[] }>();
 
