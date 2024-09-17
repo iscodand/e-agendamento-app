@@ -1,5 +1,6 @@
 using E_Agendamento.Application.Contracts.Repositories;
 using E_Agendamento.Domain.Entities;
+using E_Agendamento.Domain.Enums;
 using E_Agendamento.Infrastructure.Data.Context;
 using E_Agendamento.Infrastructure.Data.Repositories.Common;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,8 @@ namespace E_Agendamento.Infrastructure.Data.Repositories
         public async Task<IEnumerable<Schedule>> GetByCompanyAsync(string companyId)
         {
             return await _schedules.AsNoTracking()
+                                .Include(x => x.Item.Category)
+                                .Include(x => x.RequestedBy)
                                 .Where(x => x.CompanyId == companyId)
                                 .ToListAsync()
                                 .ConfigureAwait(false);
@@ -26,7 +29,22 @@ namespace E_Agendamento.Infrastructure.Data.Repositories
         public async Task<IEnumerable<Schedule>> GetByUserAsync(string userId)
         {
             return await _schedules.AsNoTracking()
+                                .Include(x => x.Item)
+                                .ThenInclude(x => x.Category)
+                                .Include(x => x.RequestedBy)
                                 .Where(x => x.RequestedById == userId)
+                                .ToListAsync()
+                                .ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<Schedule>> GetByUserWithStatusAsync(string userId, string status)
+        {
+            return await _schedules.AsNoTracking()
+                                .Include(x => x.Item)
+                                .ThenInclude(x => x.Category)
+                                .Include(x => x.RequestedBy)
+                                .Where(x => x.RequestedById == userId)
+                                .Where(x => x.Status.ToUpper() == status.ToUpper())
                                 .ToListAsync()
                                 .ConfigureAwait(false);
         }
@@ -36,6 +54,7 @@ namespace E_Agendamento.Infrastructure.Data.Repositories
             return await _schedules.AsNoTracking()
                                 .Where(x => x.ItemId == itemId)
                                 .Where(x => x.RequestedById == userId)
+                                .Where(x => x.Status == nameof(ScheduleStatus.Open) || x.Status == nameof(ScheduleStatus.Pending))
                                 .AnyAsync()
                                 .ConfigureAwait(false);
         }

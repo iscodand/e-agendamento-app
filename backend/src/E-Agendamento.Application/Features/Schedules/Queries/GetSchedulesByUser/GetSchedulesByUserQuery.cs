@@ -1,24 +1,19 @@
 ﻿using E_Agendamento.Application.Contracts.Repositories;
+using E_Agendamento.Application.Features.Items.Common;
+using E_Agendamento.Application.Features.Schedules.Queries.Common;
 using E_Agendamento.Application.Wrappers;
 using E_Agendamento.Domain.Entities;
 using MediatR;
 
 namespace E_Agendamento.Application.Features.Schedules.Queries.GetSchedulesByUser
 {
-    public class GetSchedulesByUserQuery : IRequest<Response<IEnumerable<GetSchedulesByUserViewModel>>>
+    public class GetSchedulesByUserQuery : IRequest<Response<IEnumerable<ScheduleViewModel>>>
     {
-        public string Id { get; set; }
-        public string ItemId { get; set; }
-        public string Observation { get; set; }
-        public string Status { get; set; }
         public string RequestedBy { get; set; }
-        public string ConfirmedBy { get; set; }
-        public DateTime StartedAt { get; set; }
-        public DateTime EndAt { get; set; }
-        public string CompanyId { get; set; }
+        public string Status { get; set; } = "";
     }
 
-    public class GetSchedulesByUserQueryHandler : IRequestHandler<GetSchedulesByUserQuery, Response<IEnumerable<GetSchedulesByUserViewModel>>>
+    public class GetSchedulesByUserQueryHandler : IRequestHandler<GetSchedulesByUserQuery, Response<IEnumerable<ScheduleViewModel>>>
     {
         private readonly IScheduleRepository _scheduleRepository;
         private readonly IUserRepository _userRepository;
@@ -29,14 +24,22 @@ namespace E_Agendamento.Application.Features.Schedules.Queries.GetSchedulesByUse
             _userRepository = userRepository;
         }
 
-        public async Task<Response<IEnumerable<GetSchedulesByUserViewModel>>> Handle(GetSchedulesByUserQuery request, CancellationToken cancellationToken)
+        public async Task<Response<IEnumerable<ScheduleViewModel>>> Handle(GetSchedulesByUserQuery request, CancellationToken cancellationToken)
         {
             // todo => adicionar validação de usuário existente
+            IEnumerable<Schedule> schedules;
 
-            Console.WriteLine(request.RequestedBy);
+            if (request.Status.ToUpper() == "ALL")
+            {
+                schedules = await _scheduleRepository.GetByUserAsync(request.RequestedBy);
+            }
+            else
+            {
+                schedules = await _scheduleRepository.GetByUserWithStatusAsync(request.RequestedBy, request.Status);
+            }
 
-            IEnumerable<Schedule> schedules = await _scheduleRepository.GetByUserAsync(request.RequestedBy);
-            var response = GetSchedulesByUserViewModel.Map(schedules);
+            var response = ScheduleViewModel.Map(schedules);
+
             return new("Agendamentos recuperados com sucesso", response);
         }
     }

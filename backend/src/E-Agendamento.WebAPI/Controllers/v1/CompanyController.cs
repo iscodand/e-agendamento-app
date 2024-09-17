@@ -5,6 +5,7 @@ using E_Agendamento.Application.Features.Companies.Queries.GetAllCompanies;
 using E_Agendamento.Application.Features.Companies.Queries.GetCompanyById;
 using E_Agendamento.Application.Features.Employees.Queries.GetEmployeesByCompany;
 using E_Agendamento.Application.Features.Employees.Queries.SearchByEmployee;
+using E_Agendamento.Application.Features.Schedules.Queries.GetSchedulesByCompany;
 using E_Agendamento.Domain.Enums;
 using E_Agendamento.WebAPI.Controllers.Common;
 using Microsoft.AspNetCore.Authorization;
@@ -36,7 +37,7 @@ namespace E_Agendamento.WebAPI.Controllers.v1
         }
 
         [HttpGet("{companyId}/employees")]
-        public async Task<IActionResult> Get(string companyId, [FromQuery] GetEmployeesByCompanyQuery filter)
+        public async Task<IActionResult> GetEmployees(string companyId, [FromQuery] GetEmployeesByCompanyQuery filter)
         {
             GetEmployeesByCompanyQuery query = new()
             {
@@ -49,7 +50,7 @@ namespace E_Agendamento.WebAPI.Controllers.v1
         }
 
         [HttpGet("{companyId}/employees/search")]
-        public async Task<IActionResult> Search(string companyId, [FromQuery] string search)
+        public async Task<IActionResult> SearchEmployee(string companyId, [FromQuery] string search)
         {
             SearchByEmployeeQuery query = new()
             {

@@ -1,37 +1,33 @@
 ﻿using E_Agendamento.Application.Contracts.Repositories;
 using E_Agendamento.Application.Exceptions;
+using E_Agendamento.Application.Features.Schedules.Queries.Common;
 using E_Agendamento.Application.Wrappers;
 using E_Agendamento.Domain.Entities;
-using E_Agendamento.Domain.Enums;
 using MediatR;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace E_Agendamento.Application.Features.Schedules.Commands.CreateSchedule
 {
-    public class CreateScheduleCommand : IRequest<Response<CreateScheduleCommand>>
+    public class CreateScheduleCommand : IRequest<Response<ScheduleViewModel>>
     {
         public string ItemId { get; set; }
         public string Observation { get; set; }
 
         [JsonIgnore]
         public string Id { get; set; }
+
         [JsonIgnore]
         public string Status { get; set; }
+
         [JsonIgnore]
         public string RequestedBy { get; set; }
+
         [JsonIgnore]
         public string ConfirmedBy { get; set; }
-        [JsonIgnore]
-        public DateTime StartedAt { get; set; }
-        [JsonIgnore]
+
+        public DateTime StartAt { get; set; }
         public DateTime EndAt { get; set; }
+
         [JsonIgnore]
         public string CompanyId { get; set; }
 
@@ -39,6 +35,8 @@ namespace E_Agendamento.Application.Features.Schedules.Commands.CreateSchedule
         {
             return new Schedule()
             {
+                StartAt = command.StartAt,
+                EndAt = command.EndAt,
                 ItemId = command.ItemId,
                 Observation = command.Observation,
                 RequestedById = command.RequestedBy,
@@ -47,18 +45,20 @@ namespace E_Agendamento.Application.Features.Schedules.Commands.CreateSchedule
         }
     }
 
-    public class CreateScheduleCommandHandler : IRequestHandler<CreateScheduleCommand, Response<CreateScheduleCommand>>
+    public class CreateScheduleCommandHandler : IRequestHandler<CreateScheduleCommand, Response<ScheduleViewModel>>
     {
         private readonly IItemRepository _itemRepository;
         private readonly IScheduleRepository _scheduleRepository;
+        private readonly IUserRepository _userRepository;
 
-        public CreateScheduleCommandHandler(IItemRepository itemRepository, IScheduleRepository scheduleRepository)
+        public CreateScheduleCommandHandler(IItemRepository itemRepository, IScheduleRepository scheduleRepository, IUserRepository userRepository)
         {
             _itemRepository = itemRepository;
             _scheduleRepository = scheduleRepository;
+            _userRepository = userRepository;
         }
 
-        public async Task<Response<CreateScheduleCommand>> Handle(CreateScheduleCommand request, CancellationToken cancellationToken)
+        public async Task<Response<ScheduleViewModel>> Handle(CreateScheduleCommand request, CancellationToken cancellationToken)
         {
             // 1. item precisa estar disponivel para agendamento
             // 2. item precisa ter quantidade disponivel maior que 1
@@ -70,25 +70,37 @@ namespace E_Agendamento.Application.Features.Schedules.Commands.CreateSchedule
             Item item = await _itemRepository.GetByIdAsync(request.ItemId);
             if (item is null)
             {
-                throw new ApiException("Item não encontrado.");
+                throw new ValidationException([new("ItemId", "Este item não está cadastrado. Verifique e tente novamente.")]);
             }
+
+            ApplicationUser user = await _userRepository.GetByIdAsync(request.RequestedBy);
 
             if (!item.IsAvailable || item.QuantityAvailable == 0)
             {
-                throw new ApiException("Este item não está disponível para agendamento.");
+                throw new ValidationException([new("ItemId", "Este item não está disponível para agendamento.")]);
             }
 
             bool itemAlreadyScheduled = await _scheduleRepository.ItemAlreadyScheduledByUserAsync(request.ItemId, request.RequestedBy);
             if (itemAlreadyScheduled)
             {
-                throw new ApiException("Você já possui um agendamento em aberto com esse item.");
+                throw new ValidationException([new("ItemId", "Você já possui um agendamento em aberto com esse item.")]);
             }
 
             Schedule schedule = CreateScheduleCommand.Map(request);
             schedule = await _scheduleRepository.CreateAsync(schedule);
             request.Id = schedule.Id;
 
-            return new("Item agendado com sucesso. Agora você precisa aguardar uma confirmação de um superior.", request);
+
+            // Diminuindo a quantidade disponível do item em 1
+            item.QuantityAvailable -= 1;
+            await _itemRepository.UpdateAsync(item);
+
+            schedule.Item = item;
+            schedule.RequestedBy = user;
+
+            ScheduleViewModel response = ScheduleViewModel.Map(schedule);
+
+            return new("Item agendado com sucesso. Agora você precisa aguardar uma confirmação de um superior.", response);
         }
     }
 }

@@ -1,7 +1,6 @@
 using System.Net;
 using E_Agendamento.Application.Features.Categories.Commands.CreateCategory;
 using E_Agendamento.Application.Features.Categories.Commands.DeleteCategory;
-using E_Agendamento.Application.Features.Categories.Commands.UpdateCategory;
 using E_Agendamento.Application.Features.Categories.Queries.GetCategoriesByCompany;
 using E_Agendamento.Application.Wrappers;
 using E_Agendamento.WebAPI.Controllers.Common;
@@ -32,18 +31,18 @@ namespace E_Agendamento.WebAPI.Controllers.v1
             return StatusCode(StatusCodes.Status201Created, await Mediator.Send(command));
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, [FromBody] UpdateCategoryCommand command)
-        {
-            if (id != command.Id)
-            {
-                return BadRequest();
-            }
+        // [HttpPut("{id}")]
+        // public async Task<IActionResult> Update(string id, [FromBody] UpdateCategoryCommand command)
+        // {
+        //     if (id != command.Id)
+        //     {
+        //         return BadRequest();
+        //     }
 
-            command.CompanyId = AuthenticatedUser.CompanyId;
+        //     command.CompanyId = AuthenticatedUser.CompanyId;
 
-            return Ok(await Mediator.Send(command));
-        }
+        //     return Ok(await Mediator.Send(command));
+        // }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)

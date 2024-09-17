@@ -4,6 +4,7 @@ namespace E_Agendamento.Domain.Enums
     {
         Pending,
         Open,
-        Closed
+        Closed,
+        Canceled
     }
 }

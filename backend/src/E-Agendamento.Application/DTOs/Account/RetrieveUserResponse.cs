@@ -1,3 +1,5 @@
+using E_Agendamento.Domain.Entities;
+
 namespace E_Agendamento.Application.DTOs.Account
 {
     public class RetrieveUserResponse
@@ -9,5 +11,18 @@ namespace E_Agendamento.Application.DTOs.Account
         public bool IsActive { get; set; }
         public ICollection<string> Roles { get; set; }
         public ICollection<string> Companies { get; set; }
+
+        public static RetrieveUserResponse Map(ApplicationUser user)
+        {
+            return new()
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Email = user.Email,
+                IsActive = user.IsActive,
+                Roles = [],
+                Companies = []
+            };
+        }
     }
 }
