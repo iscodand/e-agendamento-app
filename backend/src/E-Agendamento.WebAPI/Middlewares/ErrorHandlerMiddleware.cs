@@ -21,6 +21,12 @@ namespace E_Agendamento.WebAPI.Middlewares
             }
             catch (Exception error)
             {
+                if (context.Response.HasStarted)
+                {
+                    context.Response.StatusCode = 500;
+                    await context.Response.WriteAsync("An error occurred.");
+                }
+
                 HttpResponse response = context.Response;
                 response.ContentType = "application/json";
 
