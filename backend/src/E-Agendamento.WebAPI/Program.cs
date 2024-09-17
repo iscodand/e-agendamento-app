@@ -57,10 +57,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseErrorHandlerMiddleware();
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors("corspolicy");
 app.MapControllers();
-app.UseErrorHandlerMiddleware();
+app.UseSwagger();
 
 app.Run();
