@@ -8,6 +8,7 @@ namespace E_Agendamento.Application.DTOs.Account
         public string FullName { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
+        public string PhoneNumber { get; set; }
         public bool IsActive { get; set; }
         public ICollection<string> Roles { get; set; }
         public ICollection<string> Companies { get; set; }
@@ -19,6 +20,7 @@ namespace E_Agendamento.Application.DTOs.Account
                 Id = user.Id,
                 FullName = user.FullName,
                 Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
                 IsActive = user.IsActive,
                 Roles = [],
                 Companies = []

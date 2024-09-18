@@ -21,7 +21,6 @@ namespace E_Agendamento.Application.Features.Employees.Queries.GetEmployeesByCom
     {
         private readonly ICompanyRepository _companyRepository;
         private readonly IUserRepository _userRepository;
-        private readonly RoleManager<ApplicationRole> _roleManager;
 
         public GetEmployeesByCompanyQueryHandler(IUserRepository userRepository, ICompanyRepository companyRepository)
         {
