@@ -8,7 +8,7 @@ export default async function routes(
 ) {
   if (to.meta?.auth) {
     const useAuth = authStore();
-    const isAuthenticated = await useAuth.isAuthenticated;
+    const isAuthenticated = await useAuth.isAuthenticated();
     if (isAuthenticated) {
       next();
     } else {

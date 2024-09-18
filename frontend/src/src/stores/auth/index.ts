@@ -5,14 +5,13 @@ import type { APIResponse } from "@/services/types";
 import type { User } from "@/services/user/types";
 import type { AxiosError } from "axios";
 import { defineStore } from "pinia";
-import { computed, ref, type Ref } from "vue";
+import { ref, computed, type Ref } from "vue";
 
 export const authStore = defineStore("authStore", () => {
     const token = ref(localStorage.getItem('token'));
     const storedUser = localStorage.getItem('user');
     const user = ref(storedUser ? JSON.parse(storedUser) : {});
     const roles = ref<string[]>();
-
     const isAuth: Ref<boolean> = ref(false);
 
     async function dispatchAuthenticate(input: Login): Promise<APIResponse<LoginResponse>> {
@@ -20,11 +19,10 @@ export const authStore = defineStore("authStore", () => {
             const { status, data } = await API.auth.authenticate(input);
 
             if (status === 200) {
-                setToken(data.data!.accessToken)
-                setUser(data.data!.userName)
-                setRoles(data.data!.roles)
-
-                console.log(roles)
+                setToken(data.data!.accessToken);
+                setUser(data.data!.userName);
+                setRoles(data.data!.roles);
+                setIsAuthenticated();
             }
 
             return {
@@ -46,17 +44,18 @@ export const authStore = defineStore("authStore", () => {
         try {
             const { status, data } = await API.auth.verifyToken(token.value!);
 
+            setIsAuthenticated(); // Seta o estado de autenticação como verdadeiro
+
             return {
                 succeeded: true,
                 data: data.data,
                 status: status
-            }
+            };
         } catch (error) {
             const _error = error as AxiosError<string>;
 
             clear();
-            router.push('/login')
-            console.log('error', _error.response?.data)
+            router.push('/login');
 
             return {
                 succeeded: false,
@@ -68,7 +67,7 @@ export const authStore = defineStore("authStore", () => {
 
     async function dispatchGetAuthenticatedUser(): Promise<APIResponse<User>> {
         try {
-            const {status, data} = await API.auth.retrieveAuthenticatedUser(token.value!);
+            const { status, data } = await API.auth.retrieveAuthenticatedUser(token.value!);
 
             return {
                 succeeded: true,
@@ -79,8 +78,7 @@ export const authStore = defineStore("authStore", () => {
             const _error = error as AxiosError<string>;
 
             clear();
-            router.push('/login')
-            console.log('error', _error.response?.data)
+            router.push('/login');
 
             return {
                 succeeded: false,
@@ -94,6 +92,10 @@ export const authStore = defineStore("authStore", () => {
         isAuth.value = true;
     }
 
+    const isAuthenticated = async (): Promise<boolean> => {
+        return (await dispatchVerifyToken()).succeeded;
+    };
+
     function setToken(tokenValue: string): void {
         localStorage.setItem('token', tokenValue);
         token.value = tokenValue;
@@ -104,32 +106,13 @@ export const authStore = defineStore("authStore", () => {
         user.value = userValue;
     }
 
-    function setRoles(newRoles: string[]) : void {
+    function setRoles(newRoles: string[]): void {
         roles.value = newRoles;
     }
 
-    const isAuthenticated = computed(async () => {
-        return (await dispatchVerifyToken()).succeeded;
-    })
+    const userName = computed(() => user.value || '');
 
-    function refresh() {
-        const test = ['SuperAdmin']
-        setRoles(test)
-    }
-
-    const userName = computed(() => {
-        if (user.value) {
-            return user.value;
-        }
-        return '';
-    })
-
-    const getRoles = computed(() => {
-        if (roles.value) {
-            return roles.value
-        }
-        return [];
-    })
+    const getRoles = computed(() => roles.value || []);
 
     function clear() {
         localStorage.removeItem('token');
@@ -145,14 +128,13 @@ export const authStore = defineStore("authStore", () => {
         isAuth,
         dispatchAuthenticate,
         dispatchVerifyToken,
-        setIsAuthenticated,
         dispatchGetAuthenticatedUser,
         isAuthenticated,
         userName,
         getRoles,
-        refresh,
+        setIsAuthenticated,
         clear,
         setToken,
         setUser
-    }
-})
+    };
+});

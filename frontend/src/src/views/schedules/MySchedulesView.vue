@@ -146,12 +146,10 @@ async function getClosedSchedules() {
                     <DataTable :value="schedules" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"
                         tableStyle="min-width: 50rem">
 
-
                         <template #empty>
                             <NotFoundAnimation text="Você não possui agendamentos cadastrados."
-                                buttonLabel="Clique aqui para adicionar" :action=showCreateScheduleModal />
+                                buttonLabel="Clique aqui para adicionar" :action=showCreateScheduleModalHandler />
                         </template>
-
 
                         <Column field="item.name" header="Item" style="width: 20%"></Column>
                         <Column field="requestedBy.fullName" header="Solicitado por" style="width: 20%"></Column>

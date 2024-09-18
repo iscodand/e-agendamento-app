@@ -71,7 +71,11 @@ const router = createRouter({
             meta: {
                 auth: true
             }
-        }
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            redirect: '/login'
+        },
     ],
     history: createWebHistory(import.meta.env.BASE_URL)
 })
