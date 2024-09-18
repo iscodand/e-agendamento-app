@@ -5,7 +5,6 @@ using E_Agendamento.Application.Features.Companies.Queries.GetAllCompanies;
 using E_Agendamento.Application.Features.Companies.Queries.GetCompanyById;
 using E_Agendamento.Application.Features.Employees.Queries.GetEmployeesByCompany;
 using E_Agendamento.Application.Features.Employees.Queries.SearchByEmployee;
-using E_Agendamento.Application.Features.Schedules.Queries.GetSchedulesByCompany;
 using E_Agendamento.Domain.Enums;
 using E_Agendamento.WebAPI.Controllers.Common;
 using Microsoft.AspNetCore.Authorization;

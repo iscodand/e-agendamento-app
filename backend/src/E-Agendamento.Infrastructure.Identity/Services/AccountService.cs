@@ -88,22 +88,20 @@ namespace E_Agendamento.Infrastructure.Identity.Services
 
         public async Task<Response<RetrieveUserResponse>> GetAuthenticatedUserAsync(string userId)
         {
-            ApplicationUser user = await _userManager.Users
+            ApplicationUser user = await _userManager.Users.AsNoTracking()
                 .Include(x => x.UsersCompanies)
                 .ThenInclude(x => x.Company)
                 .Where(x => x.Id == userId)
                 .FirstOrDefaultAsync()
                 .ConfigureAwait(false);
 
-            var roles = await _userRoleRepository.GetUserRolesByUserIdAsync(userId);
+            var roles = await _userManager.GetRolesAsync(user);
 
             if (user is null)
             {
-                // TODO => melhorar mensagem de erro
                 throw new ApiException("Procedimento Inválido. Realize o login e tente novamente.");
             }
 
-            // ICollection<string> roles = user.UsersRoles.Select(x => x.Role).;
             ICollection<string> companies = user.UsersCompanies.Select(x => x.Company).Select(x => x.Id).ToList();
 
             RetrieveUserResponse response = new()
@@ -111,8 +109,9 @@ namespace E_Agendamento.Infrastructure.Identity.Services
                 Id = user.Id,
                 FullName = user.FullName,
                 UserName = user.UserName,
+                PhoneNumber = user.PhoneNumber,
                 Email = user.Email,
-                Roles = roles.Select(x => x.Name).ToList(),
+                Roles = roles,
                 Companies = companies
             };
 
@@ -121,23 +120,23 @@ namespace E_Agendamento.Infrastructure.Identity.Services
 
         public async Task<Response<RetrieveUserResponse>> RegisterAsync(RegisterRequest request, string origin)
         {
-            bool userNameAlreadyRegistered = await _userManager.Users.AnyAsync(x => x.UserName == request.UserName);
+            bool userNameAlreadyRegistered = await _userManager.Users.AsNoTracking().AnyAsync(x => x.UserName == request.UserName).ConfigureAwait(false);
             if (userNameAlreadyRegistered)
             {
                 throw new ValidationException([new("Username", "Esse nome de usuário já está em uso. Verifique e tente novamente.")]);
             }
 
-            bool emailAlreadyRegistered = await _userManager.Users.AnyAsync(x => x.Email == request.Email);
+            bool emailAlreadyRegistered = await _userManager.Users.AsNoTracking().AnyAsync(x => x.Email == request.Email).ConfigureAwait(false);
             if (userNameAlreadyRegistered)
             {
                 throw new ValidationException([new("Email", "Esse e-mail já está em uso. Verifique e tente novamente.")]);
             }
 
-            // bool phoneNumberAlreadyRegistered = await _userManager.Users.AnyAsync(x => x.PhoneNumber == request.PhoneNumber);
-            // if (phoneNumberAlreadyRegistered)
-            // {
-            //     throw new ValidationException([ne"", w ("Esse número de telefone já está em uso. Verifique e tente novamente.")]);
-            // }
+            bool phoneNumberAlreadyRegistered = await _userManager.Users.AsNoTracking().AnyAsync(x => x.PhoneNumber == request.PhoneNumber).ConfigureAwait(false);
+            if (phoneNumberAlreadyRegistered)
+            {
+                throw new ValidationException([new("", "Esse número de telefone já está em uso. Verifique e tente novamente.")]);
+            }
 
             ApplicationUser newUser = RegisterRequest.Map(request);
 
@@ -175,6 +174,7 @@ namespace E_Agendamento.Infrastructure.Identity.Services
                 FullName = newUser.FullName,
                 UserName = newUser.UserName,
                 Email = newUser.Email,
+                PhoneNumber = newUser.PhoneNumber,
                 Roles = request.Roles,
                 Companies = [request.CompanyId]
             };

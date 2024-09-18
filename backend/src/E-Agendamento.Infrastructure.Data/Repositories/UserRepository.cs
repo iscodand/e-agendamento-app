@@ -32,6 +32,7 @@ namespace E_Agendamento.Infrastructure.Data.Repositories
                     user.FullName,
                     user.UserName,
                     user.Email,
+                    user.PhoneNumber,
                     user.IsActive,
                     Roles = (from ur in _context.UsersRoles
                              join r in _context.Roles on ur.RoleId equals r.Id
@@ -44,18 +45,19 @@ namespace E_Agendamento.Infrastructure.Data.Repositories
                 }
             ).ToListAsync().ConfigureAwait(false);
 
-            var response = users.Select(u => new RetrieveUserResponse
+            IEnumerable<RetrieveUserResponse> output = users.Select(u => new RetrieveUserResponse
             {
                 Id = u.Id.ToString(),
                 FullName = u.FullName,
                 UserName = u.UserName,
                 IsActive = u.IsActive,
+                PhoneNumber = u.PhoneNumber,
                 Email = u.Email,
                 Roles = u.Roles,
                 Companies = u.Companies
             });
 
-            return response;
+            return output;
         }
 
         public async Task<ApplicationUser> GetWithCompaniesAsync(string userId)
@@ -63,6 +65,16 @@ namespace E_Agendamento.Infrastructure.Data.Repositories
             return await _users.AsNoTracking()
                             .Include(x => x.UsersCompanies)
                             .ThenInclude(x => x.Company)
+                            .Where(x => x.Id == userId)
+                            .FirstOrDefaultAsync()
+                            .ConfigureAwait(false);
+        }
+
+        public async Task<ApplicationUser> GetWithRolesAndCompaniesAsync(string userId)
+        {
+            return await _users.AsNoTracking()
+                            .Include(x => x.UsersCompanies).ThenInclude(x => x.Company)
+                            .Include(x => x.UsersRoles).ThenInclude(x => x.Role)
                             .Where(x => x.Id == userId)
                             .FirstOrDefaultAsync()
                             .ConfigureAwait(false);
